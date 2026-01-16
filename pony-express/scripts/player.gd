@@ -51,6 +51,7 @@ func _ready() -> void:
 	# ALWAYS create the placeholder sprite (force it)
 	create_placeholder_sprite()
 	create_collision_shape()
+	create_dust_particles()
 	
 	if has_node("AnimationPlayer"):
 		animation_player = $AnimationPlayer
@@ -64,16 +65,48 @@ func _ready() -> void:
 		print("✨ SPRITE Z-INDEX: ", sprite.z_index)
 		print(">>> SPRITE SHOULD BE ON TOP! <<<")
 
+var time: float = 0.0
+var dust_particles: CPUParticles2D = null
+
 func _process(delta: float) -> void:
 	if GameManager.is_playing():
+		time += delta
 		handle_input()
-		update_animation()
+		update_procedural_animation(delta)
 	
 	if is_invincible:
 		invincibility_timer -= delta
 		if invincibility_timer <= 0:
 			is_invincible = false
 			modulate.a = 1.0
+
+func update_procedural_animation(delta: float) -> void:
+	if not sprite: return
+	
+	if is_switching_lane:
+		# Tilt slightly when switching lanes
+		var tilt = 15.0 if target_y > position.y else -15.0
+		sprite.rotation_degrees = lerp(sprite.rotation_degrees, tilt, 15.0 * delta)
+		# Stretch vertically
+		sprite.scale = lerp(sprite.scale, Vector2(0.8, 1.2), 15.0 * delta)
+		if dust_particles: dust_particles.emitting = false
+	else:
+		# Galloping bounce effect
+		var speed_factor = GameManager.get_current_speed() / 200.0
+		var bounce_speed = 15.0 * speed_factor
+		var bounce = sin(time * bounce_speed) * 8.0
+		sprite.position.y = bounce
+		
+		# Squish and stretch based on bounce (squash when landing, stretch when jumping)
+		var squash_amt = cos(time * bounce_speed) * 0.15
+		sprite.scale = Vector2(1.0 + squash_amt, 1.0 - squash_amt)
+		
+		# Subtle rotation while running
+		sprite.rotation_degrees = lerp(sprite.rotation_degrees, sin(time * bounce_speed) * 5.0, 5.0 * delta)
+		
+		if dust_particles: 
+			dust_particles.emitting = true
+			dust_particles.speed_scale = speed_factor
 
 func _physics_process(delta: float) -> void:
 	if is_switching_lane:
@@ -99,15 +132,6 @@ func move_to_lane(lane: int) -> void:
 		target_y = lane_positions[lane]
 		is_switching_lane = true
 		print("Switching to lane ", lane)
-
-func update_animation() -> void:
-	if animation_player:
-		if is_switching_lane:
-			animation_player.play("switch_lane")
-		else:
-			animation_player.play("run")
-		
-		animation_player.speed_scale = GameManager.get_current_speed()
 
 func collect_item(item_type: String) -> void:
 	match item_type:
@@ -152,6 +176,25 @@ func reset_position() -> void:
 	is_switching_lane = false
 	is_invincible = false
 	hits_remaining = 3
+
+func create_dust_particles() -> void:
+	dust_particles = CPUParticles2D.new()
+	dust_particles.name = "DustParticles"
+	dust_particles.amount = 15
+	dust_particles.lifetime = 0.6
+	dust_particles.explosiveness = 0.1
+	dust_particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	dust_particles.emission_rect_extents = Vector2(30, 5)
+	dust_particles.direction = Vector2(-1, -0.5)
+	dust_particles.spread = 20.0
+	dust_particles.gravity = Vector2(0, 100)
+	dust_particles.initial_velocity_min = 50.0
+	dust_particles.initial_velocity_max = 100.0
+	dust_particles.scale_amount_min = 2.0
+	dust_particles.scale_amount_max = 6.0
+	dust_particles.color = Color(0.8, 0.7, 0.5, 0.6) # Dust color
+	dust_particles.position = Vector2(0, 45) # At player's feet
+	add_child(dust_particles)
 
 func create_placeholder_sprite() -> void:
 	print(">>> CREATING PLAYER SPRITE <<<")
