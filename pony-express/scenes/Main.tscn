@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://main_scene"]
+
+[ext_resource type="Script" path="res://scripts/parallax_background.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/obstacle_spawner.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/collectible_spawner.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ui_manager.gd" id="5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(60, 60)
+
+[node name="Main" type="Node2D"]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+layer = -100
+script = ExtResource("1")
+
+[node name="PlayerLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Player" type="CharacterBody2D" parent="PlayerLayer"]
+position = Vector2(300, 360)
+z_index = 10
+script = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerLayer/Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="ObstacleSpawner" type="Node2D" parent="PlayerLayer"]
+z_index = 5
+script = ExtResource("3")
+
+[node name="CollectibleSpawner" type="Node2D" parent="PlayerLayer"]
+z_index = 5
+script = ExtResource("4")
+
+[node name="UIManager" type="CanvasLayer" parent="."]
+script = ExtResource("5")
+
+
