@@ -2,6 +2,10 @@ extends Area2D
 
 var id: String = ""
 var matched_count: int = 0
+
+func add_match():
+	matched_count += 1
+	print("PHYSICS_DEBUG: Car " + id + " matched_count is now " + str(matched_count))
 @onready var label = $Label
 
 func setup(p_id: String):

@@ -34,6 +34,19 @@ func setup_train(car_ids):
 		car.setup(id)
 		current_x -= 360
 	
+func reset_cargo():
+	for child in get_children():
+		if child is Area2D: # These are our cars
+			child.matched_count = 0
+			var net = child.get_node_or_null("CargoNet")
+			if net:
+				net.visible = false
+			# Remove all crates parented to this car
+			for sub_child in child.get_children():
+				if sub_child.is_in_group("crate"):
+					sub_child.queue_free()
+	print("PHYSICS_DEBUG: Train cargo reset.")
+
 func _process(delta):
 	position.x += speed * delta
 	

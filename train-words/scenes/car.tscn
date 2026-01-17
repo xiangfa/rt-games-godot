@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/car.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/train_car.png" id="2_tex"]
-[ext_resource type="Texture2D" path="res://assets/cargo_net_yellow.png" id="3_net"]
+[ext_resource type="Texture2D" path="res://assets/cargo_net_yellow_clean.png" id="3_net"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_detection"]
 size = Vector2(360, 200)
