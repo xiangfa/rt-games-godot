@@ -144,6 +144,7 @@ func _handle_crate_arrival(crate, car):
 		score += 10
 		update_score_ui()
 		show_popup(car.global_position, "+10")
+		train.play_brand_bounce()
 		
 		# Define visual slots: Classic 3-2-1 Pyramid (Tighter Pack)
 		# Height jumps: -115 -> -190 (+75px) -> -265 (+75px)

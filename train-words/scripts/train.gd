@@ -88,6 +88,36 @@ func setup_train(car_ids):
 	
 	engine.add_child(particles)
 	
+	# Add driver
+	var driver = Sprite2D.new()
+	driver.name = "Driver"
+	driver.texture = preload("res://assets/driver_inside.png")
+	driver.scale = Vector2(0.25, 0.25) 
+	driver.position = Vector2(-280, -135) # Reverted to previous position
+	engine.add_child(driver)
+	# Set pivot to waist for natural movement
+	driver.offset = Vector2(0, -driver.texture.get_height() * 0.1)
+	
+	_start_driver_animation(driver)
+	
+	var brand_label = Label.new()
+	brand_label.name = "BrandLabel"
+	brand_label.text = "Readtopia"
+	brand_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	brand_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	var font_settings = LabelSettings.new()
+	font_settings.font_size = 75
+	font_settings.font_color = Color.WHITE
+	font_settings.outline_size = 15
+	font_settings.outline_color = Color.BLACK
+	brand_label.label_settings = font_settings
+	
+	brand_label.position = Vector2(-170, -140) 
+	brand_label.size = Vector2(600, 200)
+	brand_label.pivot_offset = brand_label.size / 2
+	engine.add_child(brand_label)
+	
 	current_x -= 280 # Narrower car spacing
 	
 	for id in car_ids:
@@ -97,7 +127,39 @@ func setup_train(car_ids):
 		car.position = Vector2(current_x, 0)
 		car.setup(id)
 		current_x -= 280
+
+func play_brand_bounce():
+	var label = get_node_or_null("Engine/BrandLabel")
+	if not label: return
 	
+	var tween = create_tween()
+	# Squish and Stretch pop
+	tween.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "scale", Vector2(1.4, 0.7), 0.1) # Squish
+	tween.tween_property(label, "scale", Vector2(0.8, 1.3), 0.1) # Stretch
+	tween.tween_property(label, "scale", Vector2(1.1, 0.9), 0.1) # Bounce back
+	tween.tween_property(label, "scale", Vector2.ONE, 0.1) # Reset
+	
+	# Color flash
+	var flash_tween = create_tween()
+	flash_tween.tween_property(label, "modulate", Color(2, 2, 0), 0.1) # Bright Yellow flash
+	flash_tween.tween_property(label, "modulate", Color.WHITE, 0.3)
+
+func _start_driver_animation(driver):
+	var tween = create_tween().set_loops()
+	
+	# Phase 1: Sitting/Looking around (Subtle head turning)
+	tween.tween_property(driver, "scale:x", 0.23, 1.5).set_trans(Tween.TRANS_SINE) # Turn head left
+	tween.tween_property(driver, "scale:x", 0.27, 1.5).set_trans(Tween.TRANS_SINE) # Turn head right
+	tween.tween_property(driver, "scale:x", 0.25, 1.0).set_trans(Tween.TRANS_SINE) # Back to center
+	
+	# Phase 2: Playful Waving
+	for i in range(3):
+		tween.tween_property(driver, "rotation_degrees", 8, 0.4).set_trans(Tween.TRANS_QUAD)
+		tween.tween_property(driver, "rotation_degrees", -8, 0.4).set_trans(Tween.TRANS_QUAD)
+	
+	tween.tween_property(driver, "rotation_degrees", 0, 0.5) 
+
 func reset_cargo():
 	print("PHYSICS_DEBUG: Resetting all train cars...")
 	for car in get_tree().get_nodes_in_group("train_cars"):
