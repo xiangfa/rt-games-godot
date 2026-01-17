@@ -45,7 +45,7 @@ def generate_melody(filename, tones, duration_per_tone=0.2, volume=0.4, sample_r
 
 generate_melody("assets/car_full.wav", [659.25, 880, 1174.66], duration_per_tone=0.1) # E5, A5, D6 arpeggio
 
-# ground_hit: Dull thud
-generate_beep("assets/ground_hit.wav", 150, 50, duration=0.2, volume=0.4)
+# ground_hit: Soft, smooth thud (Lower freq, softer attack/fade)
+generate_beep("assets/ground_hit.wav", 100, 40, duration=0.25, volume=0.2)
 
 print("Done! All SFX created.")
