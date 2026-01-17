@@ -14,14 +14,17 @@ func setup(p_id: String):
 
 func _ready():
 	print("PHYSICS_DEBUG: Car " + id + " ready at " + str(global_position))
+	
+	# Ensure net starts hidden
+	var net = get_node_or_null("CargoNet")
+	if net: net.visible = false
+	
 	body_entered.connect(_on_body_entered)
-	# Check if anything is already inside (unlikely at spawn but good for safety)
-	for body in get_overlapping_bodies():
-		_on_body_entered(body)
 
 func _on_body_entered(body: Node2D):
-	if body.is_in_group("crate"):
-		if body.get("matched"):
-			return
-		print("PHYSICS_DEBUG: VALID CRATE DETECTED in car " + id)
-		get_tree().call_group("game_events_v2", "_handle_crate_arrival", body, self)
+	# Fail early if not a crate or already matched
+	if not body.is_in_group("crate"): return
+	if body.get("matched") == true: return
+	
+	print("PHYSICS_DEBUG: VALID CRATE DETECTED in car " + id)
+	get_tree().call_group("game_events_v2", "_handle_crate_arrival", body, self)

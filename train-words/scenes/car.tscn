@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/car.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/train_car.png" id="2_tex"]
@@ -49,6 +49,6 @@ vertical_alignment = 1
 visible = false
 z_index = 10
 texture = ExtResource("3_net")
-texture_scale = Vector2(8, 8)
+texture_scale = Vector2(3, 3)
 texture_repeat = 2
-polygon = PackedVector2Array(-120, -110, 120, -110, 45, -230, -45, -230)
+polygon = PackedVector2Array(-140, -105, 140, -105, 0, -325)
