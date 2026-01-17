@@ -9,6 +9,11 @@ var level_data = {
 	"cars": ["a1", "b1", "c1"],
 	"balloons": ["a", "b", "c"]
 }
+
+var spawn_index = 0
+var auto_play: bool = false
+var debug_hud: Label
+
 func _ready():
 	name = "MainNode_v2"
 	add_to_group("game_events_v2")
