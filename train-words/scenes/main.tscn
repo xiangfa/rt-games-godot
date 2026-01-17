@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/background_desert.png" id="2_bg"]
 [ext_resource type="PackedScene" path="res://scenes/train.tscn" id="3_train"]
-[ext_resource type="PackedScene" path="res://scenes/biplane.tscn" id="4_biplane"]
+
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ground"]
 normal = Vector2(0, -1)
 
@@ -23,8 +23,6 @@ scale = Vector2(1.25, 1.25)
 [node name="Train" parent="." instance=ExtResource("3_train")]
 position = Vector2(1200, 550)
 
-[node name="Biplane" parent="." instance=ExtResource("4_biplane")]
-position = Vector2(-300, 100)
 
 [node name="UI" type="CanvasLayer" parent="."]
 

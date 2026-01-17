@@ -2,7 +2,6 @@ extends Node2D
 
 @onready var train = $Train
 @onready var score_label = $UI/ScoreLabel
-@onready var biplane = $Biplane
 @onready var spawn_timer = $SpawnTimer
 
 var score = 0
