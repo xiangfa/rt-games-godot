@@ -20,8 +20,9 @@ texture = ExtResource("2_tex")
 scale = Vector2(0.3, 0.3)
 
 [node name="Icon" type="Sprite2D" parent="."]
+z_index = 5
 position = Vector2(0, 5)
-scale = Vector2(0.12, 0.12)
+scale = Vector2(0.2, 0.2)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -40)

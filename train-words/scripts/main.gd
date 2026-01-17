@@ -45,10 +45,13 @@ func setup_game():
 	train.setup_train(level_data["cars"])
 	train.position = Vector2(-200, 600)
 	
-	# Pass icons to cars
+	# Pass icons to cars (Waiting for next frame ensures they are in group)
+	await get_tree().process_frame
+	
 	for car in get_tree().get_nodes_in_group("train_cars"):
 		var key = car.id.left(1).to_lower()
 		if texture_map.has(key):
+			print("PHYSICS_DEBUG: Setting icon for car " + car.id + " with texture " + str(texture_map[key]))
 			car.set_icon(texture_map[key])
 	
 	if spawn_timer:
@@ -113,12 +116,6 @@ func spawn_balloon(p_label: String):
 	var balloon_scene = preload("res://scenes/balloon.tscn")
 	var balloon = balloon_scene.instantiate()
 	balloon.setup(p_label)
-	
-	# Pass icon to balloon
-	var key = p_label.to_lower()
-	if texture_map.has(key):
-		balloon.set_icon(texture_map[key])
-		
 	balloon.add_to_group("balloon")
 	
 	# Start slightly off-screen for natural entrance

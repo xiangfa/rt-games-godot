@@ -4,16 +4,10 @@ var label: String = ""
 var matched: bool = false
 
 @onready var label_control = $Label
-@onready var icon = $Icon
-
 func setup(p_label: String):
 	label = p_label
 	$Label.text = label
 	$Label.visible = true
-
-func set_icon(texture: Texture2D):
-	if icon:
-		icon.texture = texture
 
 func _ready():
 	if has_node("Label"):

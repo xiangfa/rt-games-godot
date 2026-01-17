@@ -1,11 +1,9 @@
 extends Node2D
 
 @onready var crate_anchor = $CrateAnchor
-@onready var icon = $Icon
 var crate_scene = preload("res://scenes/crate.tscn")
 var label_text: String = ""
 var held_crate = null
-var icon_texture: Texture2D = null
 
 func setup(p_label: String):
 	label_text = p_label
@@ -19,13 +17,6 @@ func setup(p_label: String):
 	# Reparent crate to self
 	add_child(held_crate)
 	held_crate.position = Vector2(0, 50) # Hang below
-
-func set_icon(texture: Texture2D):
-	icon_texture = texture
-	if icon:
-		icon.texture = texture
-	if held_crate and held_crate.has_method("set_icon"):
-		held_crate.set_icon(texture)
 
 func _ready():
 	if has_node("Label"):

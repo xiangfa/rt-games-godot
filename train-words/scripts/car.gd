@@ -20,7 +20,10 @@ var pending_texture: Texture2D = null
 func set_icon(texture: Texture2D):
 	pending_texture = texture
 	if is_node_ready() and icon:
+		print("PHYSICS_DEBUG: Car " + id + " icon set immediately.")
 		icon.texture = texture
+	else:
+		print("PHYSICS_DEBUG: Car " + id + " icon set pending (not ready/no icon yet).")
 
 func _ready():
 	if pending_texture and icon:
