@@ -3,18 +3,19 @@ extends ParallaxBackground
 # parallax_background.gd - Scrolling background system
 # Creates illusion of forward movement with layered parallax effect
 
-# Scroll speeds for each layer (relative to game speed)
-const LAYER_SPEEDS = {
-	"sky": 0.1,
-	"mountains": 0.3,
-	"hills": 0.5,
-	"ground": 1.0
-}
-
 # Base scroll speed
 var base_scroll_speed: float = 200.0
 # Layer references
 var parallax_layers: Array = []
+var sky_layer: ParallaxLayer = null
+
+# Day & Night Colors
+const COLORS = {
+	"SUNRISE": Color(1.0, 0.6, 0.4), # Orange/Gold
+	"NOON": Color(1.0, 1.0, 1.0),    # Full Brightness (White modulate)
+	"SUNSET": Color(0.8, 0.3, 0.2),  # Deep Red/Orange
+	"MIDNIGHT": Color(0.2, 0.2, 0.5) # Dark Blue/Purple
+}
 
 func _ready() -> void:
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
@@ -24,6 +25,29 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if GameManager.is_playing():
 		scroll_background(delta)
+		update_time_of_day()
+
+func update_time_of_day() -> void:
+	if not sky_layer: return
+	
+	var distance = GameManager.get_distance()
+	var cycle_length = 3000.0 # Length of one full day cycle in meters
+	var t = fmod(distance, cycle_length) / cycle_length
+	
+	var target_modulate: Color
+	if t < 0.25: # Sunrise to Noon
+		target_modulate = COLORS.SUNRISE.lerp(COLORS.NOON, t / 0.25)
+	elif t < 0.5: # Noon to Sunset
+		target_modulate = COLORS.NOON.lerp(COLORS.SUNSET, (t - 0.25) / 0.25)
+	elif t < 0.75: # Sunset to Midnight
+		target_modulate = COLORS.SUNSET.lerp(COLORS.MIDNIGHT, (t - 0.5) / 0.25)
+	else: # Midnight back to Sunrise
+		target_modulate = COLORS.MIDNIGHT.lerp(COLORS.SUNRISE, (t - 0.75) / 0.25)
+	
+	# Apply modulate to all layers to simulate light change
+	for layer in parallax_layers:
+		if layer is CanvasItem:
+			layer.modulate = target_modulate
 
 func scroll_background(delta: float) -> void:
 	var speed_multiplier = GameManager.get_current_speed()
@@ -71,6 +95,8 @@ func setup_placeholder_layers() -> void:
 		var plx_layer = create_parallax_layer(config, i, viewport_size)
 		parallax_layers.append(plx_layer)
 		add_child(plx_layer)
+		if config["name"] == "Sky":
+			sky_layer = plx_layer
 	
 	print("Created ", layer_configs.size(), " placeholder parallax layers")
 

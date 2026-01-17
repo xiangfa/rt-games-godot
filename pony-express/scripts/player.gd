@@ -139,9 +139,22 @@ func collect_item(item_type: String) -> void:
 			letter_collected.emit()
 			GameManager.collect_letter()
 			AudioManager.play_sfx("letter")
+			spawn_floating_text("MAIL!", Color(1, 1, 0)) # Yellow MAIL!
+			play_happy_effect()
 			print("Collected letter!")
 		_:
 			print("Unknown item type: ", item_type)
+
+func play_happy_effect() -> void:
+	# A little victory jump and flash
+	var tween = create_tween()
+	tween.set_parallel(true)
+	# Jump up and down
+	tween.tween_property(sprite, "position:y", sprite.position.y - 30, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_property(sprite, "position:y", 0, 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# Flash yellow
+	sprite.modulate = Color(2, 2, 0) # Bright yellow
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1), 0.3)
 
 func hit_by_obstacle() -> void:
 	if is_invincible:
@@ -149,6 +162,15 @@ func hit_by_obstacle() -> void:
 	
 	hit_obstacle.emit()
 	AudioManager.play_sfx("collision")
+	GameManager.shake_camera(15.0, 0.3) # DRAMATIC SHAKE
+	spawn_impact_particles()
+	spawn_floating_text("OUCH!", Color(1, 0, 0)) # Red OUCH!
+	
+	# Hit flash effect
+	var tween = create_tween()
+	sprite.modulate = Color(10, 10, 10) # Overbright white flash
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1), 0.1)
+	
 	print("Hit obstacle!")
 	
 	GameManager.add_score(-20)
@@ -157,6 +179,40 @@ func hit_by_obstacle() -> void:
 	print("Hits remaining: ", hits_remaining)
 	if hits_remaining <= 0:
 		GameManager.end_game()
+
+func spawn_floating_text(text: String, color: Color) -> void:
+	var label = Label.new()
+	label.text = text
+	label.modulate = color
+	label.add_theme_font_size_override("font_size", 32)
+	label.z_index = 500
+	add_child(label)
+	label.position = Vector2(-20, -100)
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 120, 1.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "modulate:a", 0.0, 1.0).set_ease(Tween.EASE_IN)
+	# Correct cleanup: queue_free after the tween finishes
+	tween.chain().tween_callback(label.queue_free)
+
+func spawn_impact_particles() -> void:
+	var impact = CPUParticles2D.new()
+	impact.amount = 20
+	impact.one_shot = true
+	impact.explosiveness = 1.0
+	impact.spread = 180.0
+	impact.gravity = Vector2(0, 500)
+	impact.initial_velocity_min = 100.0
+	impact.initial_velocity_max = 300.0
+	impact.scale_amount_min = 5.0
+	impact.scale_amount_max = 15.0
+	impact.color = Color(1.0, 0.5, 0.0) # Orange impact
+	impact.position = Vector2(0, 0)
+	add_child(impact)
+	impact.emitting = true
+	# Auto-cleanup after particles finish
+	get_tree().create_timer(1.0).timeout.connect(impact.queue_free)
 
 func make_invincible(duration: float) -> void:
 	is_invincible = true
@@ -245,6 +301,7 @@ func create_collision_shape() -> void:
 	var shape = RectangleShape2D.new()
 	shape.size = Vector2(90, 90)  # Match sprite size exactly
 	collision_shape.shape = shape
+	collision_shape.position = Vector2.ZERO # Reset position
 	
 	add_child(collision_shape)
 	print(">>> Collision shape created")

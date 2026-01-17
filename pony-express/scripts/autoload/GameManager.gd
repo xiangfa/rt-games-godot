@@ -20,6 +20,7 @@ signal game_over
 signal station_reached(station_number: int)
 signal score_changed(new_score: int)
 signal letters_collected(letters: int)
+signal camera_shake_requested(intensity: float, duration: float)
 
 # Game state variables
 var current_state: GameState = GameState.MENU
@@ -226,3 +227,5 @@ func get_lane_height() -> float:
 func get_sky_height() -> float:
 	return SKY_HEIGHT
 
+func shake_camera(intensity: float = 5.0, duration: float = 0.2) -> void:
+	camera_shake_requested.emit(intensity, duration)
