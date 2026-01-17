@@ -45,7 +45,21 @@ def generate_melody(filename, tones, duration_per_tone=0.2, volume=0.4, sample_r
 
 generate_melody("assets/car_full.wav", [659.25, 880, 1174.66], duration_per_tone=0.1) # E5, A5, D6 arpeggio
 
-# ground_hit: Soft, smooth thud (Lower freq, softer attack/fade)
-generate_beep("assets/ground_hit.wav", 100, 40, duration=0.25, volume=0.2)
+# ground_hit: Deep, dumpy thump (Sub-bass, snappy decay)
+def generate_thump(filename, freq_start, freq_end, duration=0.15, volume=0.6, sample_rate=44100):
+    n_samples = int(sample_rate * duration)
+    with wave.open(filename, 'w') as f:
+        f.setnchannels(1)
+        f.setsampwidth(2)
+        f.setframerate(sample_rate)
+        for i in range(n_samples):
+            t = i / n_samples
+            freq = freq_start + (freq_end - freq_start) * t
+            value = math.sin(2 * math.pi * freq * (i / sample_rate))
+            envelope = (1.0 - t)**2 # Snappier quadratic decay for a "thump"
+            sample = int(value * volume * envelope * 32767)
+            f.writeframesraw(struct.pack('<h', sample))
+
+generate_thump("assets/ground_hit.wav", 80, 20, duration=0.15, volume=0.7)
 
 print("Done! All SFX created.")
