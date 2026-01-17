@@ -17,13 +17,14 @@ func setup_train(car_ids):
 		child.queue_free()
 		
 	var engine = Sprite2D.new()
+	engine.name = "Engine"
 	engine.texture = preload("res://assets/train_engine.png")
 	engine.scale = Vector2(0.3, 0.3)
 	add_child(engine)
 	
 	# arrange engine at the front (rightmost) and cars trailing left
 	var current_x = 0
-	engine.position = Vector2(current_x, -110) # Adjusted for taller asset
+	engine.position = Vector2(current_x, -40) # Adjusted to middle ground (not too high, not too low)
 	
 	# Add engine wheels
 	var wheel_tex = preload("res://assets/train_wheel.png")
@@ -130,7 +131,8 @@ func setup_train(car_ids):
 
 func play_brand_bounce():
 	var label = get_node_or_null("Engine/BrandLabel")
-	if not label: return
+	if not label:
+		return
 	
 	var tween = create_tween()
 	# Squish and Stretch pop
@@ -140,10 +142,10 @@ func play_brand_bounce():
 	tween.tween_property(label, "scale", Vector2(1.1, 0.9), 0.1) # Bounce back
 	tween.tween_property(label, "scale", Vector2.ONE, 0.1) # Reset
 	
-	# Color flash
-	var flash_tween = create_tween()
-	flash_tween.tween_property(label, "modulate", Color(2, 2, 0), 0.1) # Bright Yellow flash
-	flash_tween.tween_property(label, "modulate", Color.WHITE, 0.3)
+	# Distinct Triple Flash (Yellow <-> White)
+	var flash_tween = create_tween().set_loops(3)
+	flash_tween.tween_property(label, "modulate", Color(4, 4, 0), 0.08) # Super bright yellow
+	flash_tween.tween_property(label, "modulate", Color.WHITE, 0.08)
 
 func _start_driver_animation(driver):
 	var tween = create_tween().set_loops()
