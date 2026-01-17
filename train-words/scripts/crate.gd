@@ -1,27 +1,31 @@
 extends RigidBody2D
 
-var label: String = ""
+var logic_key: String = "" # The matching key (a, b, c)
+var label_text: String = "" # The visual text (Apple, Word...)
 var matched: bool = false
 
 @onready var label_control = $Label
-func setup(p_label: String):
-	label = p_label
-	$Label.text = label
+func setup(p_key: String, p_text: String):
+	logic_key = p_key
+	label_text = p_text
+	$Label.text = label_text
 	$Label.visible = true
 
 func _ready():
 	if has_node("Label"):
 		$Label.visible = true
-	name = "Crate_" + label
+	name = "Crate_" + logic_key + "_" + str(randi() % 1000)
 	add_to_group("crate")
 	contact_monitor = true
 	max_contacts_reported = 1
+	contact_monitor = true
+	max_contacts_reported = 1
 	body_entered.connect(_on_body_entered)
-	print("Crate " + label + " ready.")
+	print("Crate " + label_text + " ready.")
 
 func _on_body_entered(body):
 	if matched: 
-		print("PHYSICS_DEBUG: Crate " + label + " IGNORED collision because matched=true")
+		print("PHYSICS_DEBUG: Crate " + label_text + " IGNORED collision because matched=true")
 		return
 	
 	if body.name == "Ground":
@@ -30,7 +34,7 @@ func _on_body_entered(body):
 
 func vanish():
 	if matched: return
-	print("PHYSICS_DEBUG: Crate " + label + " vanishing (juice animation)")
+	print("PHYSICS_DEBUG: Crate " + label_text + " vanishing (juice animation)")
 	
 	# Disable physics to avoid double hits during vanish
 	freeze = true

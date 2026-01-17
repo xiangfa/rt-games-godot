@@ -22,14 +22,15 @@ scale = Vector2(0.3, 0.3)
 [node name="Frame" type="Polygon2D" parent="."]
 # A solid Navy Blue frame background
 color = Color(0.1, 0.1, 0.4, 1.0)
-polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
+polygon = PackedVector2Array(-40, -60, 40, -60, 54, -54, 60, -40, 60, 40, 54, 54, 40, 60, -40, 60, -54, 54, -60, 40, -60, -40, -54, -54)
 position = Vector2(0, 10)
 
 [node name="OctagonMask" type="Polygon2D" parent="."]
 # Restored to 2 (Draw + Clip) for proper masking
 clip_children = 2
 position = Vector2(0, 10)
-polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
+# Approx Rounded Square (120x120, r=20)
+polygon = PackedVector2Array(-40, -60, 40, -60, 54, -54, 60, -40, 60, 40, 54, 54, 40, 60, -40, 60, -54, 54, -60, 40, -60, -40, -54, -54)
 
 [node name="Icon" type="Sprite2D" parent="OctagonMask"]
 scale = Vector2(0.12, 0.12)

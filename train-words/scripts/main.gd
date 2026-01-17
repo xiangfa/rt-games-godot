@@ -4,22 +4,38 @@ extends Node2D
 @onready var score_label = $UI/ScoreLabel
 @onready var spawn_timer = $SpawnTimer
 
+const ApiManagerScript = preload("res://scripts/api_manager.gd")
+
 var score = 0
-var level_data = {
-	"cars": ["a1", "b1", "c1"],
-	"balloons": ["a", "b", "c"]
-}
+var level_data = {} # Wait for API to populate
 
 var spawn_index = 0
 var auto_play: bool = false
 var debug_hud: Label
 
+# New variables for API Manager and game state
+var api_manager: Node
+var is_game_over: bool = false
+var mission_label: Label # Assuming this will be added or is already present in the UI
+
 func _ready():
+	randomize()
+	print("Main: Ready. Initializing API Manager...")
+	
 	name = "MainNode_v2"
 	add_to_group("game_events_v2")
 	
-	_setup_debug_hud()
-	setup_game()
+	_setup_debug_hud() # Keep debug HUD setup
+	
+	# v3.1: Initialize API Manager
+	api_manager = ApiManagerScript.new()
+	api_manager.name = "APIManager"
+	add_child(api_manager)
+	api_manager.data_ready.connect(_on_api_data_ready)
+	api_manager.start_initialization()
+	
+	# Show loading state
+	score_label.text = "Loading..."
 	
 	# FORCE connection in case editor link is broken
 	if has_node("SpawnTimer"):
@@ -27,6 +43,11 @@ func _ready():
 		if not st.timeout.is_connected(_on_spawn_timer_timeout):
 			st.timeout.connect(_on_spawn_timer_timeout)
 			print("PHYSICS_DEBUG: Manually connected SpawnTimer signal.")
+
+func _on_api_data_ready(data):
+	print("Main: API Data Received. Starting Game.")
+	level_data = data
+	setup_game()
 
 func _setup_debug_hud():
 	debug_hud = Label.new()
@@ -38,6 +59,10 @@ func _setup_debug_hud():
 	add_child(debug_hud)
 
 func setup_game():
+	if not level_data.has("cars"):
+		print("Main: Level Data missing 'cars'. Skipping setup.")
+		return
+		
 	train.setup_train(level_data["cars"])
 	train.position = Vector2(-200, 600)
 	
@@ -61,6 +86,23 @@ func _process(_delta):
 		for car in get_tree().get_nodes_in_group("train_cars"):
 			hud_text += "Car " + car.id.left(1).to_upper() + ": " + str(car.matched_count) + "/6\n"
 		debug_hud.text = hud_text
+
+	# Setup Cars with Dynamic Data (v3.1)
+	# cars is [CarNode, CarNode, CarNode] and keys are ["a", "b", "c"]
+	# We mapped logic: Car 0 -> A, Car 1 -> B, Car 2 -> C
+	# Now we pass the full word info to the car
+	var cars = get_tree().get_nodes_in_group("train_cars")
+	var keys = ["a", "b", "c"]
+	for i in range(cars.size()):
+		var key = keys[i]
+		var info = level_data.get(key, {})
+		
+		# Pass ID (still "A/B/C" for physics logic) but also visual path
+		cars[i].setup(key.to_upper()) 
+		
+		# Direct injection of dynamic path (bypassing internal matching if present)
+		if info.has("path"):
+			cars[i]._set_icon_from_path(info["path"])
 
 	# Restart timer if it somehow died
 	if spawn_timer.is_stopped() and spawn_timer.time_left == 0:
@@ -97,14 +139,20 @@ func _on_spawn_timer_timeout():
 		return
 		
 	print("PHYSICS_DEBUG: SpawnTimer timeout! Firing spawn #", spawn_index)
-	var label = level_data["balloons"][spawn_index]
-	spawn_balloon(label)
+	var key = level_data["balloons"][spawn_index]
+	var word_text = "ERROR"
+	if level_data.has(key) and level_data[key].has("word"):
+		word_text = level_data[key]["word"]
+	else:
+		word_text = key # Fallback
+		
+	spawn_balloon(key, word_text)
 	spawn_index = (spawn_index + 1) % level_data["balloons"].size()
 
-func spawn_balloon(p_label: String):
+func spawn_balloon(p_key: String, p_text: String):
 	var balloon_scene = preload("res://scenes/balloon.tscn")
 	var balloon = balloon_scene.instantiate()
-	balloon.setup(p_label)
+	balloon.setup(p_key, p_text)
 	balloon.add_to_group("balloon")
 	
 	# Start slightly off-screen for natural entrance
@@ -127,7 +175,7 @@ func _handle_crate_arrival(crate, car):
 		return
 	
 	var car_target = car.id.left(1).to_lower().strip_edges()
-	var crate_label = crate.label.to_lower().strip_edges()
+	var crate_key = crate.logic_key.to_lower().strip_edges()
 	
 	# 1. Full Car Logic - Check BEFORE incrementing
 	if car.matched_count >= 6:
@@ -136,13 +184,13 @@ func _handle_crate_arrival(crate, car):
 		return
 
 	# 2. Match calculation
-	if crate_label == car_target:
+	if crate_key == car_target:
 		# ATOMIC: Mark matched and increment count IMMEDIATELY
 		crate.matched = true
 		var slot_index = car.matched_count
 		car.matched_count += 1
 		
-		print("PHYSICS_DEBUG: MATCH SUCCESS! Crate '" + crate.name + "' (" + crate_label + ") -> Car " + car.id + " Slot [" + str(slot_index) + "]")
+		print("PHYSICS_DEBUG: MATCH SUCCESS! Crate '" + crate.label_text + "' (" + crate_key + ") -> Car " + car.id + " Slot [" + str(slot_index) + "]")
 		score += 10
 		update_score_ui()
 		show_popup(car.global_position, "+10")
@@ -185,7 +233,7 @@ func _handle_crate_arrival(crate, car):
 			)
 	else:
 		# MISMATCH: Trigger vanishing!
-		print("PHYSICS_DEBUG: Car " + car.id + " MISMATCH for crate: " + crate_label)
+		print("PHYSICS_DEBUG: Car " + car.id + " MISMATCH for crate: " + crate_key)
 		if has_node("MissSound"): $MissSound.play()
 		if crate.has_method("vanish"):
 			crate.vanish()
