@@ -1,0 +1,54 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/car.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/train_car.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/cargo_net_yellow.png" id="3_net"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_detection"]
+size = Vector2(360, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_car_floor"]
+size = Vector2(320, 80)
+
+[node name="Car" type="Area2D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+scale = Vector2(0.3, 0.3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -40)
+shape = SubResource("RectangleShape2D_detection")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+# Physical floor
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 80)
+shape = SubResource("RectangleShape2D_car_floor")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -180.0
+offset_top = -20.0
+offset_right = 180.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 96
+text = "A1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CargoNet" type="Polygon2D" parent="."]
+visible = false
+z_index = 10
+texture = ExtResource("3_net")
+texture_scale = Vector2(8, 8)
+texture_repeat = 2
+polygon = PackedVector2Array(-120, -110, 120, -110, 45, -230, -45, -230)
