@@ -34,10 +34,15 @@ func _on_area_2d_input_event(_viewport, event, _shape_idx):
 func pop_balloon():
 	print("PHYSICS_DEBUG: Balloon popped! Dropping crate: " + (held_crate.label if held_crate else "NULL"))
 	if held_crate:
-		# Reparent to Main scene so it doesn't move with the balloon anymore
-		# Use global_position to keep it in the same spot
+		# Inherit Train Momentum
+		var train_speed = 0.0
 		var main_scene = get_tree().current_scene
+		if main_scene.has_node("Train"):
+			train_speed = main_scene.get_node("Train").speed
+		
+		# Reparent to Main scene so it doesn't move with the balloon anymore
 		held_crate.reparent(main_scene)
+		held_crate.linear_velocity = Vector2(train_speed, 0) # Apply momentum
 		held_crate.freeze = false
 		held_crate = null
 	

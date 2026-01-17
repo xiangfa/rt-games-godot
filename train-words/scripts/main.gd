@@ -173,7 +173,7 @@ func _handle_crate_arrival(crate, car):
 		
 		var tween = create_tween()
 		tween.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-		tween.tween_property(crate, "position", target_pos, 0.6).from(car.to_local(start_global))
+		tween.tween_property(crate, "position", target_pos, 0.6)
 		tween.parallel().tween_property(crate, "rotation", randf_range(-0.1, 0.1), 0.4)
 		
 			tween.finished.connect(func():
