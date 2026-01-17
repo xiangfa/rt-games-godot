@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/background_desert.png" id="2_bg"]
 [ext_resource type="PackedScene" path="res://scenes/train.tscn" id="3_train"]
+[ext_resource type="AudioStream" path="res://assets/success.wav" id="4_match"]
+[ext_resource type="AudioStream" path="res://assets/fail.wav" id="5_miss"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ground"]
 normal = Vector2(0, -1)
@@ -43,5 +45,13 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("WorldBoundaryShape2D_ground")
+
+[node name="MatchSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_match")
+volume_db = -10.0
+
+[node name="MissSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_miss")
+volume_db = -5.0
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

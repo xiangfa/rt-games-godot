@@ -71,6 +71,7 @@ func _process(_delta):
 	# Cleanup dropped crates
 	for crate in get_tree().get_nodes_in_group("crate"):
 		if not crate.matched and crate.global_position.y > 800:
+			if has_node("MissSound"): $MissSound.play()
 			if crate.has_method("vanish"):
 				crate.vanish()
 			else:
@@ -146,6 +147,7 @@ func _handle_crate_arrival(crate, car):
 		update_score_ui()
 		show_popup(car.global_position, "+10")
 		train.play_brand_bounce()
+		if has_node("MatchSound"): $MatchSound.play()
 		
 		# Define visual slots: Classic 3-2-1 Pyramid (Tighter Pack)
 		# Height jumps: -115 -> -190 (+75px) -> -265 (+75px)
@@ -184,6 +186,7 @@ func _handle_crate_arrival(crate, car):
 	else:
 		# MISMATCH: Trigger vanishing!
 		print("PHYSICS_DEBUG: Car " + car.id + " MISMATCH for crate: " + crate_label)
+		if has_node("MissSound"): $MissSound.play()
 		if crate.has_method("vanish"):
 			crate.vanish()
 
