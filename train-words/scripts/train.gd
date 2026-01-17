@@ -30,22 +30,24 @@ func setup_train(car_ids):
 	for id in car_ids:
 		var car = car_scene.instantiate()
 		add_child(car)
+		car.add_to_group("train_cars") # Group is more reliable than 'is Area2D'
 		car.position = Vector2(current_x, 0)
 		car.setup(id)
 		current_x -= 360
 	
 func reset_cargo():
-	for child in get_children():
-		if child is Area2D: # These are our cars
-			child.matched_count = 0
-			var net = child.get_node_or_null("CargoNet")
-			if net:
-				net.visible = false
-			# Remove all crates parented to this car
-			for sub_child in child.get_children():
-				if sub_child.is_in_group("crate"):
-					sub_child.queue_free()
-	print("PHYSICS_DEBUG: Train cargo reset.")
+	print("PHYSICS_DEBUG: Resetting all train cars...")
+	for car in get_tree().get_nodes_in_group("train_cars"):
+		car.matched_count = 0
+		var net = car.get_node_or_null("CargoNet")
+		if net:
+			net.visible = false
+		
+		# Clear visual crates
+		for child in car.get_children():
+			if child.is_in_group("crate"):
+				child.queue_free()
+	print("PHYSICS_DEBUG: Train cargo reset complete.")
 
 func _process(delta):
 	position.x += speed * delta

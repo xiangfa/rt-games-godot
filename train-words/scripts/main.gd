@@ -12,6 +12,8 @@ var level_data = {
 }
 var spawn_index = 0
 
+var auto_play: bool = true
+
 func _ready():
 	name = "MainNode_v2"
 	add_to_group("game_events_v2")
@@ -27,12 +29,37 @@ func _process(_delta):
 	# 2800 allows the 2x train to fully exit before resetting
 	if train.position.x > 2800:
 		train.position.x = -1200 
+		if train.has_method("reset_cargo"):
+			train.reset_cargo()
 	
 	# Cleanup dropped crates that fall off bottom
 	for crate in get_tree().get_nodes_in_group("crate"):
 		if not crate.matched and crate.global_position.y > 800:
 			print("PHYSICS_DEBUG: Cleaning up unmatched crate " + crate.label + " at Y=" + str(crate.global_position.y))
 			crate.queue_free()
+	
+	if auto_play:
+		_check_auto_play()
+
+func _check_auto_play():
+	# Find all balloons
+	for balloon in get_tree().get_nodes_in_group("balloon"):
+		if not balloon.has_method("pop_balloon"): continue
+		
+		var target_char = balloon.label_text.to_lower()
+		# Find the target car for this balloon
+		for car in train.get_children():
+			if not car is Area2D: continue # Skip engine/non-cars
+			
+			var car_char = car.id.left(1).to_lower()
+			if car_char == target_char:
+				# Pop when horizontally aligned with target car
+				# x_offset: adjust for fall time and car center
+				var dist = abs(balloon.global_position.x - car.global_position.x)
+				if dist < 15: # Tight tolerance for perfect drop
+					print("AUTO_PLAY: Dropping " + target_char + " into car " + car.id)
+					balloon.pop_balloon()
+					break
 
 func _on_spawn_timer_timeout():
 	var label = level_data["balloons"][spawn_index]
@@ -46,6 +73,7 @@ func spawn_balloon(p_label: String):
 	var balloon_scene = preload("res://scenes/balloon.tscn")
 	var balloon = balloon_scene.instantiate()
 	balloon.setup(p_label)
+	balloon.add_to_group("balloon") # For auto-play tracking
 	
 	# Flying from Right to Left
 	var start_x = 1400
