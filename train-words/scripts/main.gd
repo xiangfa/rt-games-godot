@@ -12,7 +12,7 @@ var level_data = {
 }
 var spawn_index = 0
 
-var auto_play: bool = true
+var auto_play: bool = false
 var debug_hud: Label
 
 func _ready():
@@ -39,7 +39,7 @@ func _setup_debug_hud():
 
 func setup_game():
 	train.setup_train(level_data["cars"])
-	train.position = Vector2(-200, 550) 
+	train.position = Vector2(-200, 600) # Adjusted to middle ground (Y=600) for better stack clearance
 	
 	if spawn_timer:
 		spawn_timer.wait_time = 2.0 
@@ -72,7 +72,10 @@ func _process(_delta):
 	# Cleanup dropped crates
 	for crate in get_tree().get_nodes_in_group("crate"):
 		if not crate.matched and crate.global_position.y > 800:
-			crate.queue_free()
+			if crate.has_method("vanish"):
+				crate.vanish()
+			else:
+				crate.queue_free()
 
 	if auto_play:
 		_check_auto_play()
@@ -119,12 +122,14 @@ func spawn_balloon(p_label: String):
 	tween.tween_callback(balloon.queue_free)
 
 func _handle_crate_arrival(crate, car):
-	if crate.matched: return
+	if crate.matched: 
+		print("PHYSICS_DEBUG: Crate already matched, ignoring arrival.")
+		return
 	
 	var car_target = car.id.left(1).to_lower().strip_edges()
 	var crate_label = crate.label.to_lower().strip_edges()
 	
-	# 1. Full Car Logic
+	# 1. Full Car Logic - Check BEFORE incrementing
 	if car.matched_count >= 6:
 		print("PHYSICS_DEBUG: Car " + car.id + " is FULL. Rolling off.")
 		_animate_roll_off(crate, car)
@@ -132,15 +137,12 @@ func _handle_crate_arrival(crate, car):
 
 	# 2. Match calculation
 	if crate_label == car_target:
+		# ATOMIC: Mark matched and increment count IMMEDIATELY
 		crate.matched = true
-		crate.remove_from_group("crate")
-		crate.add_to_group("cargo") # New group for reliable cleanup
-		
-		# ATOMIC: Increment count IMMEDIATELY
 		var slot_index = car.matched_count
 		car.matched_count += 1
 		
-		print("PHYSICS_DEBUG: MATCH SUCCESS! Slot: " + str(slot_index) + " for " + car.id)
+		print("PHYSICS_DEBUG: MATCH SUCCESS! Crate '" + crate.name + "' (" + crate_label + ") -> Car " + car.id + " Slot [" + str(slot_index) + "]")
 		score += 10
 		update_score_ui()
 		show_popup(car.global_position, "+10")
@@ -181,9 +183,10 @@ func _handle_crate_arrival(crate, car):
 				_check_win_condition()
 			)
 	else:
-		# MISMATCH: Just ignore. Do NOT vanish.
-		# The crate might hit the correct car next, or the ground.
-		print("PHYSICS_DEBUG: Car " + car.id + " IGNORED mismatched crate: " + crate_label)
+		# MISMATCH: Trigger vanishing!
+		print("PHYSICS_DEBUG: Car " + car.id + " MISMATCH for crate: " + crate_label)
+		if crate.has_method("vanish"):
+			crate.vanish()
 
 func _check_win_condition():
 	var all_cars = get_tree().get_nodes_in_group("train_cars")

@@ -1,6 +1,6 @@
 extends Node2D
 
-var speed = 150.0
+var speed = 100.0
 var car_scene = preload("res://scenes/car.tscn")
 var cars = []
 
