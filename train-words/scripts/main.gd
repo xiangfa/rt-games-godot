@@ -170,9 +170,9 @@ func _handle_crate_arrival(crate, car):
 		await get_tree().process_frame
 		
 		var tween = create_tween()
-		tween.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-		# Smooth transition from current local position (inherited momentum) into slot
-		tween.tween_property(crate, "position", target_pos, 0.6)
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		# Snappier transition into slot to feel more like a landing than a float
+		tween.tween_property(crate, "position", target_pos, 0.4)
 		tween.parallel().tween_property(crate, "rotation", randf_range(-0.1, 0.1), 0.4)
 		
 		if car.matched_count == 6:
