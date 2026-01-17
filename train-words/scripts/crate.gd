@@ -23,8 +23,8 @@ func _on_body_entered(body):
 		return
 	
 	if body.name == "Ground":
-		print("PHYSICS_DEBUG: Crate " + label + " hit ground. Vanishing.")
-		vanish()
+		# Do nothing here, main.gd handles off-screen cleanup + sound
+		pass
 
 func vanish():
 	if matched: return

@@ -70,12 +70,9 @@ func _process(_delta):
 	
 	# Cleanup dropped crates
 	for crate in get_tree().get_nodes_in_group("crate"):
-		if not crate.matched and crate.global_position.y > 800:
-			if has_node("MissSound"): $MissSound.play()
-			if crate.has_method("vanish"):
-				crate.vanish()
-			else:
-				crate.queue_free()
+		if not crate.matched and crate.global_position.y > 750:
+			if has_node("GroundHitSound"): $GroundHitSound.play()
+			crate.queue_free() # Naturally "drop out" without vanish animation
 
 	if auto_play:
 		_check_auto_play()

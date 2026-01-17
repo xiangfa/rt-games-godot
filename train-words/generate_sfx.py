@@ -44,4 +44,8 @@ def generate_melody(filename, tones, duration_per_tone=0.2, volume=0.4, sample_r
                 f.writeframesraw(struct.pack('<h', sample))
 
 generate_melody("assets/car_full.wav", [659.25, 880, 1174.66], duration_per_tone=0.1) # E5, A5, D6 arpeggio
-print("Done! assets/success.wav, assets/fail.wav, and assets/car_full.wav created.")
+
+# ground_hit: Dull thud
+generate_beep("assets/ground_hit.wav", 150, 50, duration=0.2, volume=0.4)
+
+print("Done! All SFX created.")

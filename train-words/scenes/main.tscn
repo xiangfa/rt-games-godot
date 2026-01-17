@@ -6,6 +6,7 @@
 [ext_resource type="AudioStream" path="res://assets/success.wav" id="4_match"]
 [ext_resource type="AudioStream" path="res://assets/fail.wav" id="5_miss"]
 [ext_resource type="AudioStream" path="res://assets/car_full.wav" id="6_full"]
+[ext_resource type="AudioStream" path="res://assets/ground_hit.wav" id="7_ground"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ground"]
 normal = Vector2(0, -1)
@@ -41,7 +42,7 @@ text = "Score: 0"
 wait_time = 2.0
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(640, 700)
+position = Vector2(640, 900)
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
@@ -58,5 +59,9 @@ volume_db = -5.0
 [node name="CarFullSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_full")
 volume_db = -8.0
+
+[node name="GroundHitSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_ground")
+volume_db = -5.0
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
