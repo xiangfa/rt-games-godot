@@ -150,7 +150,6 @@ func _handle_crate_arrival(crate, car):
 		if has_node("MatchSound"): $MatchSound.play()
 		
 		# Define visual slots: Classic 3-2-1 Pyramid (Tighter Pack)
-		# Height jumps: -115 -> -190 (+75px) -> -265 (+75px)
 		var heap_slots = [
 			Vector2(-75, -115), Vector2(75, -115), Vector2(0, -115), # Floor (0,1,2)
 			Vector2(-40, -190), Vector2(40, -190),                  # Row 2 (3,4)
@@ -166,16 +165,17 @@ func _handle_crate_arrival(crate, car):
 		crate.set_deferred("collision_layer", 0)
 		crate.set_deferred("collision_mask", 0)
 		
-		var start_global = crate.global_position
 		crate.call_deferred("reparent", car)
 		
 		await get_tree().process_frame
 		
 		var tween = create_tween()
 		tween.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		# Smooth transition from current local position (inherited momentum) into slot
 		tween.tween_property(crate, "position", target_pos, 0.6)
 		tween.parallel().tween_property(crate, "rotation", randf_range(-0.1, 0.1), 0.4)
 		
+		if car.matched_count == 6:
 			tween.finished.connect(func():
 				var net = car.get_node_or_null("CargoNet")
 				if net: 
