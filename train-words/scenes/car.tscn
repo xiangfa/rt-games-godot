@@ -19,16 +19,18 @@ script = ExtResource("1_script")
 texture = ExtResource("2_tex")
 scale = Vector2(0.3, 0.3)
 
-[node name="Badge" type="ColorRect" parent="."]
-offset_left = -60.0
-offset_top = -55.0
-offset_right = 60.0
-offset_bottom = 65.0
-color = Color(0.0470588, 0.14902, 0.419608, 1) # Solid Navy Blue
-
-[node name="Icon" type="Sprite2D" parent="."]
-z_index = 10
+[node name="Frame" type="Polygon2D" parent="."]
+# A subtle background to define the octagon window
+color = Color(0.0470588, 0.14902, 0.419608, 1) # Navy Blue
+polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
 position = Vector2(0, 5)
+
+[node name="OctagonMask" type="Polygon2D" parent="."]
+clip_children = 2
+position = Vector2(0, 5)
+polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
+
+[node name="Icon" type="Sprite2D" parent="OctagonMask"]
 scale = Vector2(0.12, 0.12)
 
 [node name="Label" type="Label" parent="."]

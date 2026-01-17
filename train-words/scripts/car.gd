@@ -8,15 +8,19 @@ func add_match():
 	print("PHYSICS_DEBUG: Car " + id + " matched_count is now " + str(matched_count))
 
 @onready var label = $Label
-@onready var icon = $Icon
+@onready var icon = $OctagonMask/Icon # Updated path to look inside mask
 
 func setup(p_id: String):
 	id = p_id
+	# Basic string setup
 	if has_node("Label"):
 		$Label.text = id.left(1).to_upper()
-		$Label.visible = true # Fallback is now VISIBLE
+		$Label.visible = true
+
+func _ready():
+	print("PHYSICS_DEBUG: Car " + id + " ready. Starting localized icon lookup.")
 	
-	# LOCALIZED LOADING (Removing dependency on main.gd timing)
+	# LOCALIZED LOADING INSIDE READY (Maximum stability)
 	var char_key = id.left(1).to_lower()
 	var icon_path = ""
 	match char_key:
@@ -25,24 +29,15 @@ func setup(p_id: String):
 		"c": icon_path = "res://assets/icon_cat.png"
 	
 	if icon_path != "":
-		print("PHYSICS_DEBUG: Car " + id + " attempting localized load: " + icon_path)
+		print("PHYSICS_DEBUG: Car " + id + " loading path: " + icon_path)
 		var tex = load(icon_path)
-		if tex:
-			print("PHYSICS_DEBUG: Car " + id + " successfully loaded texture: " + str(tex))
-			call_deferred("_apply_texture", tex)
+		if tex and icon:
+			print("PHYSICS_DEBUG: Success! Applying texture and hiding letter for car " + id)
+			icon.texture = tex
+			icon.visible = true
+			if label: label.visible = false
 		else:
-			print("PHYSICS_DEBUG: ERROR - Car " + id + " failed to load icon at " + icon_path)
-
-func _apply_texture(tex):
-	if icon:
-		icon.texture = tex
-		icon.visible = true
-		# Hide label only if icon works
-		if label: label.visible = false
-		print("PHYSICS_DEBUG: Car " + id + " texture applied and label hidden.")
-
-func _ready():
-	print("PHYSICS_DEBUG: Car " + id + " ready.")
+			print("PHYSICS_DEBUG: ERROR - Failed to load or missing icon node for car " + id)
 	
 	# Ensure net starts hidden
 	var net = get_node_or_null("CargoNet")
