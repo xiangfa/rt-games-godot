@@ -176,10 +176,19 @@ func _start_download_process(candidates):
 		var game_key = map_keys[i]
 		var local_path = CACHE_DIR + item.key + "_" + item.word + ".png" # Cache key
 		
+		# v3.5: Web CORS Proxy
+		var download_url = item.url
+		if OS.has_feature("web"):
+			# HARDCODED PROXY FOR PLAYGROUND: Point to local Python server
+			# Real Prod would use a relative path like "/proxy?url=" with a proper backend
+			var escaped_url = download_url.uri_encode()
+			download_url = "http://localhost:8081/proxy?url=" + escaped_url
+			print("API: Proxying Web URL -> " + download_url)
+		
 		words_data[game_key] = {
 			"word": item.word,
 			"path": local_path,
-			"url": item.url
+			"url": item.url # Keep original URL for reference
 		}
 		
 		# Check if cached
@@ -187,7 +196,7 @@ func _start_download_process(candidates):
 			print("API: Cache hit for " + item.word)
 		else:
 			download_queue.append({
-				"url": item.url,
+				"url": download_url,
 				"path": local_path
 			})
 	
