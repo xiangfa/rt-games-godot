@@ -7,7 +7,12 @@ extends Node2D
 var score = 0
 var level_data = {
 	"cars": ["a1", "b1", "c1"],
-	"balloons": ["a", "b", "c"] # In order of spawn?
+	"balloons": ["a", "b", "c"]
+}
+var texture_map = {
+	"a": preload("res://assets/icon_apple.png"),
+	"b": preload("res://assets/icon_ball.png"),
+	"c": preload("res://assets/icon_cat.png")
 }
 var spawn_index = 0
 
@@ -38,7 +43,13 @@ func _setup_debug_hud():
 
 func setup_game():
 	train.setup_train(level_data["cars"])
-	train.position = Vector2(-200, 600) # Adjusted to middle ground (Y=600) for better stack clearance
+	train.position = Vector2(-200, 600)
+	
+	# Pass icons to cars
+	for car in get_tree().get_nodes_in_group("train_cars"):
+		var key = car.id.left(1).to_lower()
+		if texture_map.has(key):
+			car.set_icon(texture_map[key])
 	
 	if spawn_timer:
 		spawn_timer.wait_time = 2.0 
@@ -102,6 +113,12 @@ func spawn_balloon(p_label: String):
 	var balloon_scene = preload("res://scenes/balloon.tscn")
 	var balloon = balloon_scene.instantiate()
 	balloon.setup(p_label)
+	
+	# Pass icon to balloon
+	var key = p_label.to_lower()
+	if texture_map.has(key):
+		balloon.set_icon(texture_map[key])
+		
 	balloon.add_to_group("balloon")
 	
 	# Start slightly off-screen for natural entrance

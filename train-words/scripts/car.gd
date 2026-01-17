@@ -6,11 +6,18 @@ var matched_count: int = 0
 func add_match():
 	matched_count += 1
 	print("PHYSICS_DEBUG: Car " + id + " matched_count is now " + str(matched_count))
+
 @onready var label = $Label
+@onready var icon = $Icon
 
 func setup(p_id: String):
 	id = p_id
 	$Label.text = id
+	$Label.visible = false
+
+func set_icon(texture: Texture2D):
+	if icon:
+		icon.texture = texture
 
 func _ready():
 	print("PHYSICS_DEBUG: Car " + id + " ready at " + str(global_position))

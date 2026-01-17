@@ -1,6 +1,6 @@
 63f7b34db8d8cdea90c76aacccf841ec
 ::res://::1768664741
-::res://assets/::1768667612
+::res://assets/::1768668462
 background_desert.png::CompressedTexture2D::672836894657801034::1768604848::1768612334::1::::<><><>0<>0<>a0543b8ed54b9a2b9501098a5c4d8ef9<>res://.godot/imported/background_desert.png-d4a6f421f29362c9a05191b560cb47df.ctex::
 blimp_asset.png::CompressedTexture2D::5674901583877473337::1768612287::1768612334::1::::<><><>0<>0<>f61c78480568b4c76b4a8733a25a2ce8<>res://.godot/imported/blimp_asset.png-959aaee60f7b5d8a350b60ce6f9f1c2b.ctex::
 cargo_net_yellow_clean.png::CompressedTexture2D::1584564270425952936::1768619149::1768619213::1::::<><><>0<>0<>acb134f11b045ae04ed6944ea88bf96f<>res://.godot/imported/cargo_net_yellow_clean.png-740be2fc1ac270fd83545829d827dd31.ctex::
@@ -9,6 +9,9 @@ crate_asset.png::CompressedTexture2D::6039218709619887332::1768612287::176861233
 driver_inside.png::CompressedTexture2D::8469370339990177418::1768629410::1768629457::1::::<><><>0<>0<>41fe6a7138f389a2be6042c6ca2289c7<>res://.godot/imported/driver_inside.png-c1ca01f147639ac966986a302c362673.ctex::
 fail.wav::AudioStreamWAV::1193696323073991482::1768667818::1768666316::1::::<><><>0<>0<>2b1ef6567f40618d81a083a516664558<>res://.godot/imported/fail.wav-6b1ea9c356dc1bd49f2c9b66e6e8afe4.sample::
 ground_hit.wav::AudioStreamWAV::1201547892101275257::1768667818::1768667843::1::::<><><>0<>0<>7870ce78861533ab0b3a42db0ed2e10e<>res://.godot/imported/ground_hit.wav-b01888107a1ea1a260da0a14ecc56546.sample::
+icon_apple.png::CompressedTexture2D::5221319637487365135::1768668462::1768668566::0::::<><><>0<>0<>75d4880389af925cc4ab59ab13a75144<>::
+icon_ball.png::CompressedTexture2D::7098482408190966303::1768668462::1768668566::0::::<><><>0<>0<>3fba4360002d40f9179c19a974162e9f<>::
+icon_cat.png::CompressedTexture2D::6607287417877036264::1768668462::1768668566::0::::<><><>0<>0<>6dee779d05f7b1a59aa83079ef951c61<>::
 smoke_puff_soft.png::CompressedTexture2D::8851404771178795219::1768627567::1768627568::1::::<><><>0<>0<>3a84c7fac61bd177041671d51db6c9be<>res://.godot/imported/smoke_puff_soft.png-a9cbfcd528f041998269c3b1eca42634.ctex::
 success.wav::AudioStreamWAV::5060183628591807703::1768667818::1768666316::1::::<><><>0<>0<>ad268f996d01362dca79722b275c52e4<>res://.godot/imported/success.wav-d56a8e27841d2b80c57c89844001dbbd.sample::
 train_car.png::CompressedTexture2D::1448268595229524129::1768612286::1768612335::1::::<><><>0<>0<>05d01ac2c676ce203899d2eac565c7db<>res://.godot/imported/train_car.png-5805078a574cae1cee979b12f678df53.ctex::
