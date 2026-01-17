@@ -27,4 +27,21 @@ print("Generating SFX...")
 generate_beep("assets/success.wav", 880, 1760, duration=0.15, volume=0.3)
 # fail: Low pitched descending "buzz/thud"
 generate_beep("assets/fail.wav", 200, 100, duration=0.3, volume=0.5)
-print("Done! assets/success.wav and assets/fail.wav created.")
+
+# car_full: Double ding melody
+def generate_melody(filename, tones, duration_per_tone=0.2, volume=0.4, sample_rate=44100):
+    with wave.open(filename, 'w') as f:
+        f.setnchannels(1)
+        f.setsampwidth(2)
+        f.setframerate(sample_rate)
+        for freq in tones:
+            n_samples = int(sample_rate * duration_per_tone)
+            for i in range(n_samples):
+                t = i / n_samples
+                value = math.sin(2 * math.pi * freq * (i / sample_rate))
+                envelope = math.sin(math.pi * t) # Subtle swell and fade
+                sample = int(value * volume * envelope * 32767)
+                f.writeframesraw(struct.pack('<h', sample))
+
+generate_melody("assets/car_full.wav", [659.25, 880, 1174.66], duration_per_tone=0.1) # E5, A5, D6 arpeggio
+print("Done! assets/success.wav, assets/fail.wav, and assets/car_full.wav created.")

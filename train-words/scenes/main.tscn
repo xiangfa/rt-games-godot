@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/train.tscn" id="3_train"]
 [ext_resource type="AudioStream" path="res://assets/success.wav" id="4_match"]
 [ext_resource type="AudioStream" path="res://assets/fail.wav" id="5_miss"]
+[ext_resource type="AudioStream" path="res://assets/car_full.wav" id="6_full"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ground"]
 normal = Vector2(0, -1)
@@ -53,5 +54,9 @@ volume_db = -10.0
 [node name="MissSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_miss")
 volume_db = -5.0
+
+[node name="CarFullSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_full")
+volume_db = -8.0
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

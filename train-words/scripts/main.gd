@@ -176,11 +176,11 @@ func _handle_crate_arrival(crate, car):
 		tween.tween_property(crate, "position", target_pos, 0.6).from(car.to_local(start_global))
 		tween.parallel().tween_property(crate, "rotation", randf_range(-0.1, 0.1), 0.4)
 		
-		if car.matched_count == 6:
-			# Delay net until animation finishes
 			tween.finished.connect(func():
 				var net = car.get_node_or_null("CargoNet")
-				if net: net.visible = true
+				if net: 
+					net.visible = true
+					if has_node("CarFullSound"): $CarFullSound.play()
 				_check_win_condition()
 			)
 	else:
