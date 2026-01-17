@@ -9,19 +9,29 @@ var level_data = {
 	"cars": ["a1", "b1", "c1"],
 	"balloons": ["a", "b", "c"]
 }
-var texture_map = {
-	"a": load("res://assets/icon_apple.png"),
-	"b": load("res://assets/icon_ball.png"),
-	"c": load("res://assets/icon_cat.png")
-}
-var spawn_index = 0
+var texture_map = {}
 
+var spawn_index = 0
 var auto_play: bool = false
 var debug_hud: Label
 
 func _ready():
 	name = "MainNode_v2"
 	add_to_group("game_events_v2")
+	
+	# Load textures in _ready for maximum stability
+	texture_map = {
+		"a": load("res://assets/icon_apple.png"),
+		"b": load("res://assets/icon_ball.png"),
+		"c": load("res://assets/icon_cat.png")
+	}
+	for k in texture_map:
+		var tex = texture_map[k]
+		if tex:
+			print("PHYSICS_DEBUG: Loaded texture for ", k, ": ", tex, " Size: ", tex.get_size())
+		else:
+			print("PHYSICS_DEBUG: ERROR - Failed to load texture for ", k)
+			
 	_setup_debug_hud()
 	setup_game()
 	

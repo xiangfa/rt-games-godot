@@ -19,8 +19,14 @@ script = ExtResource("1_script")
 texture = ExtResource("2_tex")
 scale = Vector2(0.3, 0.3)
 
+[node name="Badge" type="Polygon2D" parent="."]
+# A Navy Blue circle-ish badge for high contrast
+color = Color(0.1, 0.1, 0.4, 1.0)
+polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
+position = Vector2(0, 5)
+
 [node name="Icon" type="Sprite2D" parent="."]
-z_index = 5
+z_index = 10
 position = Vector2(0, 5)
 scale = Vector2(0.2, 0.2)
 

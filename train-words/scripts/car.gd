@@ -26,9 +26,20 @@ func set_icon(texture: Texture2D):
 		print("PHYSICS_DEBUG: Car " + id + " icon set pending (not ready/no icon yet).")
 
 func _ready():
-	if pending_texture and icon:
-		icon.texture = pending_texture
-	print("PHYSICS_DEBUG: Car " + id + " ready at " + str(global_position))
+	print("PHYSICS_DEBUG: Car " + id + " entering _ready. icon node: " + str(icon))
+	if pending_texture:
+		if icon:
+			print("PHYSICS_DEBUG: Car " + id + " applying pending texture: " + str(pending_texture))
+			icon.texture = pending_texture
+			icon.visible = true
+			if icon.texture:
+				print("PHYSICS_DEBUG: Car " + id + " texture applied. Size: ", icon.texture.get_size())
+		else:
+			print("PHYSICS_DEBUG: ERROR - icon node is NULL in _ready for car " + id)
+	else:
+		print("PHYSICS_DEBUG: Car " + id + " has no pending texture in _ready.")
+	
+	print("PHYSICS_DEBUG: Car " + id + " ready. Icon visible: ", icon.visible if icon else "N/A")
 	
 	# Ensure net starts hidden
 	var net = get_node_or_null("CargoNet")
