@@ -1,6 +1,6 @@
 63f7b34db8d8cdea90c76aacccf841ec
 ::res://::1768612303
-::res://assets/::1768625934
+::res://assets/::1768627568
 background_desert.png::CompressedTexture2D::672836894657801034::1768604848::1768612334::1::::<><><>0<>0<>a0543b8ed54b9a2b9501098a5c4d8ef9<>res://.godot/imported/background_desert.png-d4a6f421f29362c9a05191b560cb47df.ctex::
 balloon_crate_assets.png::CompressedTexture2D::5298148733523050524::1768607024::1768612334::1::::<><><>0<>0<>53f2ed6b38e41c594843388baa34633c<>res://.godot/imported/balloon_crate_assets.png-ffa026e6837676cefe64679d4a118bb8.ctex::
 balloon_crate_assets_clean.png::CompressedTexture2D::8442321910267040646::1768611225::1768612333::0::::<><><>0<>0<>d9c6a1875b169a9bf6ee59bf8f3aa0f4<>::
@@ -12,10 +12,13 @@ cargo_net_yellow.png::CompressedTexture2D::1920669217943996043::1768618727::1768
 cargo_net_yellow_clean.png::CompressedTexture2D::1584564270425952936::1768619149::1768619213::1::::<><><>0<>0<>acb134f11b045ae04ed6944ea88bf96f<>res://.godot/imported/cargo_net_yellow_clean.png-740be2fc1ac270fd83545829d827dd31.ctex::
 crate_asset.png::CompressedTexture2D::6039218709619887332::1768612287::1768612334::1::::<><><>0<>0<>9cb200d4e51d22426b51ad86bff3f03a<>res://.godot/imported/crate_asset.png-31542e03d31cc56af2d98f3f96cdb584.ctex::
 smoke_puff.png::CompressedTexture2D::1641542744221400533::1768625934::1768625951::1::::<><><>0<>0<>564c75d542350e8d62ff5e0b050a5d10<>res://.godot/imported/smoke_puff.png-b5508b6c053d6e5a496a20cb903f5b4b.ctex::
+smoke_puff_cute.png::CompressedTexture2D::5701047749446645210::1768626588::1768626599::1::::<><><>0<>0<>71f772dec7ba1dd7b4f5de8e290501b3<>res://.godot/imported/smoke_puff_cute.png-9025b8a6978c5d0e35be1641fb3cd19e.ctex::
+smoke_puff_soft.png::CompressedTexture2D::8851404771178795219::1768627567::1768627568::1::::<><><>0<>0<>3a84c7fac61bd177041671d51db6c9be<>res://.godot/imported/smoke_puff_soft.png-a9cbfcd528f041998269c3b1eca42634.ctex::
+smoke_puff_solid.png::CompressedTexture2D::3302872587875942449::1768627338::1768627346::1::::<><><>0<>0<>c670bdee99773cfef735c70a6de6a9db<>res://.godot/imported/smoke_puff_solid.png-24b391a6fec177e5037d8c170de97742.ctex::
 train_assets.png::CompressedTexture2D::5763606458076241704::1768607024::1768612334::1::::<><><>0<>0<>c6b5ad5e8d3fca0782f5b590197e998c<>res://.godot/imported/train_assets.png-f0526ddbeee968f9710d4d4591f83c76.ctex::
 train_assets_clean.png::CompressedTexture2D::7081711220244684663::1768611225::1768612334::0::::<><><>0<>0<>e4ad7bed6ed427462e07d74fcec9ee79<>::
 train_car.png::CompressedTexture2D::1448268595229524129::1768612286::1768612335::1::::<><><>0<>0<>05d01ac2c676ce203899d2eac565c7db<>res://.godot/imported/train_car.png-5805078a574cae1cee979b12f678df53.ctex::
-train_engine.png::CompressedTexture2D::476154806745260962::1768612286::1768612335::1::::<><><>0<>0<>ddc5fba5387782a7f5898f1b25295faf<>res://.godot/imported/train_engine.png-c96a920bd511c747584b1a33e7dba741.ctex::
+train_engine.png::CompressedTexture2D::476154806745260962::1768628050::1768628093::1::::<><><>0<>0<>ddc5fba5387782a7f5898f1b25295faf<>res://.godot/imported/train_engine.png-c96a920bd511c747584b1a33e7dba741.ctex::
 train_sheet_transparent.png::CompressedTexture2D::2100640286028157856::1768611607::1768612334::0::::<><><>0<>0<>1b2521641f866b156c95d0a59adec0a3<>::
 train_wheel.png::CompressedTexture2D::6320989117318917745::1768625290::1768625317::1::::<><><>0<>0<>4ec70832546680fd843d3b3ab7d53fa0<>res://.godot/imported/train_wheel.png-bce68548d3199250522840354be42d80.ctex::
 ::res://scenes/::1768620092
@@ -31,4 +34,4 @@ biplane.gd::GDScript::4013785083991816345::1768606982::0::1::::<>Node2D<><>0<>0<
 car.gd::GDScript::3934191108429159466::1768625686::0::1::::<>Area2D<><>0<>0<><>::
 crate.gd::GDScript::709630713525590759::1768620092::0::1::::<>RigidBody2D<><>0<>0<><>::
 main.gd::GDScript::6078332117640388109::1768624820::0::1::::<>Node2D<><>0<>0<><>::
-train.gd::GDScript::6133247860380753997::1768625943::0::1::::<>Node2D<><>0<>0<><>::
+train.gd::GDScript::6133247860380753997::1768628071::0::1::::<>Node2D<><>0<>0<><>::

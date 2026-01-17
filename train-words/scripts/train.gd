@@ -23,16 +23,16 @@ func setup_train(car_ids):
 	
 	# arrange engine at the front (rightmost) and cars trailing left
 	var current_x = 0
-	engine.position = Vector2(current_x, -60)
+	engine.position = Vector2(current_x, -110) # Adjusted for taller asset
 	
 	# Add engine wheels
 	var wheel_tex = preload("res://assets/train_wheel.png")
 	var wheel_positions = [
-		Vector2(120, 240),  # Front small
-		Vector2(-40, 240),  # Mid small
-		Vector2(-240, 200)  # Back big
+		Vector2(290, 280),  # Front small
+		Vector2(-40, 240),  # Mid big
+		Vector2(-330, 240)  # Back big
 	]
-	var wheel_scales = [0.25, 0.25, 0.45] # Relative to engine's 0.3 scale
+	var wheel_scales = [0.22, 0.42, 0.42] 
 	
 	for i in range(3):
 		var w = Sprite2D.new()
@@ -45,41 +45,45 @@ func setup_train(car_ids):
 	# Add smoke particles to chimney
 	var particles = CPUParticles2D.new()
 	particles.name = "SmokeParticles"
-	# Position relative to engine (Approx chimney top)
-	particles.position = Vector2(70, -220) 
-	particles.texture = preload("res://assets/smoke_puff.png")
-	particles.amount = 30 # Increased density
-	particles.lifetime = 2.0 # Longer life
-	particles.preprocess = 2.0 # Start with trail
+	# Position relative to engine chimney
+	particles.position = Vector2(235, -350) 
+	particles.texture = preload("res://assets/smoke_puff_soft.png")
+	particles.amount = 15 # Less dense
+	particles.lifetime = 1.0 
+	particles.preprocess = 0.0
 	particles.speed_scale = 1.0
-	particles.explosiveness = 0.0
-	particles.randomness = 0.8
+	
+	# SOFT FLOW: Balanced explosiveness
+	particles.explosiveness = 0.5 
+	particles.randomness = 0.5
 	
 	# TRAILING EFFECT: Particles stay in world space
 	particles.local_coords = false
 	
 	# Motion: Drift UP and LEFT
-	particles.direction = Vector2(-1, -0.3)
-	particles.spread = 25.0
-	particles.gravity = Vector2(0, -80) # Rise faster
-	particles.initial_velocity_min = 50.0
-	particles.initial_velocity_max = 120.0
+	particles.direction = Vector2(-1, -0.1)
+	particles.spread = 15.0
+	particles.gravity = Vector2(0, -60)
+	particles.initial_velocity_min = 30.0
+	particles.initial_velocity_max = 80.0
 	
-	# Scale: Start small, get big
-	particles.scale_amount_min = 0.1
-	particles.scale_amount_max = 0.3
+	# Scale: Even smaller puffs
+	particles.scale_amount_min = 0.03
+	particles.scale_amount_max = 0.08
 	var curve = Curve.new()
-	curve.add_point(Vector2(0, 0.4))
-	curve.add_point(Vector2(1, 1.2))
+	curve.add_point(Vector2(0, 0.3))
+	curve.add_point(Vector2(0.3, 1.2))
+	curve.add_point(Vector2(1, 0.5))
 	particles.scale_amount_curve = curve
 	
-	# Alpha: Semi-transparent fading to clear
+	# Alpha: Solid white fading out smoothly
 	var gradient = Gradient.new()
-	gradient.set_color(0, Color(1, 1, 1, 0.9))
-	gradient.set_color(1, Color(1, 1, 1, 0))
+	gradient.set_color(0, Color(1, 1, 1, 0.8)) # Soft start
+	gradient.set_color(0.5, Color(1, 1, 1, 0.6))
+	gradient.set_color(1, Color(1, 1, 1, 0))   # Smooth dissolve
 	particles.color_ramp = gradient
 	
-	# Ensure it sits on top of everything
+	# Ensure it sits on top
 	particles.z_index = 500
 	
 	engine.add_child(particles)
