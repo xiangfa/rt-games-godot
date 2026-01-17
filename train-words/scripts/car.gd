@@ -13,13 +13,18 @@ func add_match():
 func setup(p_id: String):
 	id = p_id
 	$Label.text = id
-	$Label.visible = false
+	$Label.visible = false # Keep Car label hidden, we use Icons here
+
+var pending_texture: Texture2D = null
 
 func set_icon(texture: Texture2D):
-	if icon:
+	pending_texture = texture
+	if is_node_ready() and icon:
 		icon.texture = texture
 
 func _ready():
+	if pending_texture and icon:
+		icon.texture = pending_texture
 	print("PHYSICS_DEBUG: Car " + id + " ready at " + str(global_position))
 	
 	# Ensure net starts hidden

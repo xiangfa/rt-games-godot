@@ -9,13 +9,15 @@ var matched: bool = false
 func setup(p_label: String):
 	label = p_label
 	$Label.text = label
-	$Label.visible = false
+	$Label.visible = true
 
 func set_icon(texture: Texture2D):
 	if icon:
 		icon.texture = texture
 
 func _ready():
+	if has_node("Label"):
+		$Label.visible = true
 	name = "Crate_" + label
 	add_to_group("crate")
 	contact_monitor = true

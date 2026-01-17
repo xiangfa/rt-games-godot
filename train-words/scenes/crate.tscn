@@ -18,15 +18,10 @@ script = ExtResource("1_script")
 texture = ExtResource("2_tex")
 scale = Vector2(0.1, 0.1)
 
-[node name="Icon" type="Sprite2D" parent="."]
-position = Vector2(0, 0)
-scale = Vector2(0.15, 0.15)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_crate")
 
 [node name="Label" type="Label" parent="."]
-visible = false
 offset_left = -40.0
 offset_top = -30.0
 offset_right = 40.0

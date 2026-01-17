@@ -11,7 +11,7 @@ func setup(p_label: String):
 	label_text = p_label
 	if has_node("Label"):
 		$Label.text = label_text
-		$Label.visible = false
+		$Label.visible = true
 	
 	held_crate = crate_scene.instantiate()
 	held_crate.setup(label_text)
@@ -29,7 +29,7 @@ func set_icon(texture: Texture2D):
 
 func _ready():
 	if has_node("Label"):
-		$Label.visible = false
+		$Label.visible = true
 
 func _process(_delta):
 	pass
