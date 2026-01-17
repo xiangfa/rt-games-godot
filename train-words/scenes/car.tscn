@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/car.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/train_car.png" id="2_tex"]
@@ -19,16 +19,30 @@ script = ExtResource("1_script")
 texture = ExtResource("2_tex")
 scale = Vector2(0.3, 0.3)
 
-[node name="Badge" type="Polygon2D" parent="."]
-# A Navy Blue circle-ish badge for high contrast
-color = Color(0.1, 0.1, 0.4, 1.0)
-polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
-position = Vector2(0, 5)
+[node name="Badge" type="ColorRect" parent="."]
+offset_left = -60.0
+offset_top = -55.0
+offset_right = 60.0
+offset_bottom = 65.0
+color = Color(0.0470588, 0.14902, 0.419608, 1) # Solid Navy Blue
 
 [node name="Icon" type="Sprite2D" parent="."]
 z_index = 10
 position = Vector2(0, 5)
-scale = Vector2(0.2, 0.2)
+scale = Vector2(0.12, 0.12)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -55.0
+offset_right = 60.0
+offset_bottom = 65.0
+theme_override_colors/font_color = Color(1, 1, 0, 1) # Bright Yellow
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 64
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -40)
@@ -42,20 +56,6 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2(0, 80)
 shape = SubResource("RectangleShape2D_car_floor")
-
-[node name="Label" type="Label" parent="."]
-visible = false
-offset_left = -180.0
-offset_top = -60.0 # Moved up by 40px
-offset_right = 180.0
-offset_bottom = 60.0 # Adjusted height
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 16
-theme_override_font_sizes/font_size = 96
-text = "A1"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="CargoNet" type="Polygon2D" parent="."]
 visible = false

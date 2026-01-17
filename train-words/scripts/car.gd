@@ -12,34 +12,37 @@ func add_match():
 
 func setup(p_id: String):
 	id = p_id
-	$Label.text = id
-	$Label.visible = false # Keep Car label hidden, we use Icons here
+	if has_node("Label"):
+		$Label.text = id.left(1).to_upper()
+		$Label.visible = true # Fallback is now VISIBLE
+	
+	# LOCALIZED LOADING (Removing dependency on main.gd timing)
+	var char_key = id.left(1).to_lower()
+	var icon_path = ""
+	match char_key:
+		"a": icon_path = "res://assets/icon_apple.png"
+		"b": icon_path = "res://assets/icon_ball.png"
+		"c": icon_path = "res://assets/icon_cat.png"
+	
+	if icon_path != "":
+		print("PHYSICS_DEBUG: Car " + id + " attempting localized load: " + icon_path)
+		var tex = load(icon_path)
+		if tex:
+			print("PHYSICS_DEBUG: Car " + id + " successfully loaded texture: " + str(tex))
+			call_deferred("_apply_texture", tex)
+		else:
+			print("PHYSICS_DEBUG: ERROR - Car " + id + " failed to load icon at " + icon_path)
 
-var pending_texture: Texture2D = null
-
-func set_icon(texture: Texture2D):
-	pending_texture = texture
-	if is_node_ready() and icon:
-		print("PHYSICS_DEBUG: Car " + id + " icon set immediately.")
-		icon.texture = texture
-	else:
-		print("PHYSICS_DEBUG: Car " + id + " icon set pending (not ready/no icon yet).")
+func _apply_texture(tex):
+	if icon:
+		icon.texture = tex
+		icon.visible = true
+		# Hide label only if icon works
+		if label: label.visible = false
+		print("PHYSICS_DEBUG: Car " + id + " texture applied and label hidden.")
 
 func _ready():
-	print("PHYSICS_DEBUG: Car " + id + " entering _ready. icon node: " + str(icon))
-	if pending_texture:
-		if icon:
-			print("PHYSICS_DEBUG: Car " + id + " applying pending texture: " + str(pending_texture))
-			icon.texture = pending_texture
-			icon.visible = true
-			if icon.texture:
-				print("PHYSICS_DEBUG: Car " + id + " texture applied. Size: ", icon.texture.get_size())
-		else:
-			print("PHYSICS_DEBUG: ERROR - icon node is NULL in _ready for car " + id)
-	else:
-		print("PHYSICS_DEBUG: Car " + id + " has no pending texture in _ready.")
-	
-	print("PHYSICS_DEBUG: Car " + id + " ready. Icon visible: ", icon.visible if icon else "N/A")
+	print("PHYSICS_DEBUG: Car " + id + " ready.")
 	
 	# Ensure net starts hidden
 	var net = get_node_or_null("CargoNet")
