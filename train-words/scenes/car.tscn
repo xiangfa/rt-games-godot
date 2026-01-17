@@ -20,13 +20,14 @@ texture = ExtResource("2_tex")
 scale = Vector2(0.3, 0.3)
 
 [node name="Frame" type="Polygon2D" parent="."]
-# A solid Navy Blue frame that fits the red carriage
+# A solid Navy Blue frame background
 color = Color(0.1, 0.1, 0.4, 1.0)
 polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
 position = Vector2(0, 10)
 
 [node name="OctagonMask" type="Polygon2D" parent="."]
-clip_children = 2
+# DEBUG MODE: Set to 1 (Clip Only) to see if White shape disappears
+clip_children = 1
 position = Vector2(0, 10)
 polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42)
 
@@ -34,6 +35,7 @@ polygon = PackedVector2Array(-60, 0, -42, -42, 0, -60, 42, -42, 60, 0, 42, 42, 0
 scale = Vector2(0.12, 0.12)
 
 [node name="Label" type="Label" parent="."]
+z_index = 20 # DEBUG: Force on top
 offset_left = -60.0
 offset_top = -50.0
 offset_right = 60.0
@@ -42,7 +44,7 @@ theme_override_colors/font_color = Color(1, 1, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 72
-text = "A"
+text = "A?"
 horizontal_alignment = 1
 vertical_alignment = 1
 

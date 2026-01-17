@@ -13,8 +13,7 @@ func add_match():
 func setup(p_id: String):
 	id = p_id
 	print("PHYSICS_DEBUG: Car setup called with ID: " + id)
-	# Update visual if ready, otherwise _ready will handle it
-	if is_node_ready():
+	if is_node_ready(): 
 		_refresh_visuals()
 
 func _ready():
@@ -28,14 +27,9 @@ func _ready():
 	body_entered.connect(_on_body_entered)
 
 func _refresh_visuals():
-	if id == "": 
-		print("PHYSICS_DEBUG: Car refresh skipped (no ID yet).")
-		return
+	if id == "": return
 		
-	# Setup Fallback Label
-	if label:
-		label.text = id.left(1).to_upper()
-		label.visible = true
+	var display_text = id.left(1).to_upper()
 	
 	# Attempt Localized Loading
 	var char_key = id.left(1).to_lower()
@@ -52,9 +46,20 @@ func _refresh_visuals():
 			print("PHYSICS_DEBUG: SUCCESS! Car " + id + " icon applied.")
 			icon.texture = tex
 			icon.visible = true
-			if label: label.visible = false # Only hide label if icon succeeds
+			
+			display_text += "+" # Success Code
+			# DEBUG: Keep label visible to see the code
+			# if label: label.visible = false 
 		else:
-			print("PHYSICS_DEBUG: ERROR - Car " + id + " could not apply icon from " + icon_path)
+			print("PHYSICS_DEBUG: ERROR - Car " + id + " failed load.")
+			display_text += "!" # Error Code
+	else:
+		display_text += "?" # Unknown Code
+
+	# Update debug label
+	if label:
+		label.text = display_text
+		label.visible = true
 
 func _on_body_entered(body: Node2D):
 	# Fail early if not a crate or already matched
