@@ -10,9 +10,9 @@ var level_data = {
 	"balloons": ["a", "b", "c"]
 }
 var texture_map = {
-	"a": preload("res://assets/icon_apple.png"),
-	"b": preload("res://assets/icon_ball.png"),
-	"c": preload("res://assets/icon_cat.png")
+	"a": load("res://assets/icon_apple.png"),
+	"b": load("res://assets/icon_ball.png"),
+	"c": load("res://assets/icon_cat.png")
 }
 var spawn_index = 0
 
