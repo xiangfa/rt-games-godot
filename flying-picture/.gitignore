@@ -1,0 +1,10 @@
+# Godot-specific ignores
+.godot/
+*.import
+export_presets.cfg
+*.translation
+
+# System files
+.DS_Store
+*.png
+!assets/images/**/*.png

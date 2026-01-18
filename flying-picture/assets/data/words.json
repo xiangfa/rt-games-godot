@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "image_url": "res://assets/images/test_cases/apple.png",
+        "correct_word": "Apple",
+        "options": [
+            "Apple",
+            "Peach",
+            "Orange",
+            "Watermelon"
+        ]
+    },
+    {
+        "id": 2,
+        "image_url": "res://assets/images/test_cases/peach.png",
+        "correct_word": "Peach",
+        "options": [
+            "Peach",
+            "Apple",
+            "Orange",
+            "Watermelon"
+        ]
+    },
+    {
+        "id": 3,
+        "image_url": "res://assets/images/test_cases/orange_fruit.png",
+        "correct_word": "Orange",
+        "options": [
+            "Orange",
+            "Apple",
+            "Peach",
+            "Watermelon"
+        ]
+    },
+    {
+        "id": 4,
+        "image_url": "res://assets/images/test_cases/watermelon.png",
+        "correct_word": "Watermelon",
+        "options": [
+            "Watermelon",
+            "Apple",
+            "Peach",
+            "Orange"
+        ]
+    }
+]
