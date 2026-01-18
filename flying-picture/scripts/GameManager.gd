@@ -41,20 +41,24 @@ func _ready():
 	setup_spinners()
 	start_level()
 
-func apply_transparency_shader(target_node: CanvasItem, mode: String = "magenta"):
+func apply_transparency_shader(target_node, mode = "white"):
+	if not target_node: return
+	
 	var mat = ShaderMaterial.new()
 	mat.shader = Shader.new()
-	var code = "shader_type canvas_item; "
-	if mode == "magenta":
-		code += "void fragment() { vec4 color = texture(TEXTURE, UV); if (color.r > 0.8 && color.g < 0.2 && color.b > 0.8) { color.a = 0.0; } COLOR = color; }"
-	else: # Support removing checkered/faux transparency (white/gray)
-		code += "void fragment() { vec4 color = texture(TEXTURE, UV); "
-		code += "float max_val = max(max(color.r, color.g), color.b); "
-		code += "float min_val = min(min(color.r, color.g), color.b); "
-		# Catch all neutral colors (R,G,B close to each other)
-		# Removed brightness threshold to also catch black/dark gray backgrounds
-		code += "bool is_neutral = (max_val - min_val) < 0.2; "
-		code += "if (is_neutral) { color.a = 0.0; } COLOR = color; }"
+	var code = "shader_type canvas_item;\n"
+	
+	# Tolerance: 0.2 for UI/Propellers (Aggressive), 0.1 for Round Images (Safe)
+	var tolerance = 0.2
+	if mode == "image_safe":
+		tolerance = 0.08 # Even safer for images
+		
+	code += "void fragment() { vec4 color = texture(TEXTURE, UV); "
+	code += "float max_val = max(max(color.r, color.g), color.b); "
+	code += "float min_val = min(min(color.r, color.g), color.b); "
+	code += "bool is_neutral = (max_val - min_val) < " + str(tolerance) + " && color.a > 0.1; "
+	code += "if (is_neutral) { color.a = 0.0; } COLOR = color; }"
+	
 	mat.shader.code = code
 	target_node.material = mat
 
@@ -143,23 +147,23 @@ func start_level():
 		win_game()
 		return
 		
-	current_round_data = words_data[current_round_index]
-	
 	# 1. Kill any lingering animations
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
 	for t in old_tween: t.kill()
 	
-	# 2. Reset visual state to defaults
+	# 2. Reset visual state to defaults BEFORE loading next
 	formation.scale = Vector2.ONE
 	formation.modulate = Color.WHITE
 	content_sprite.visible = true
 	content_sprite.modulate = Color.WHITE
+	content_sprite.texture = null # Clear old texture
 	
 	# 3. Always reset formation to bring back any crashed helicopters
 	reset_formation()
 	
 	var img_path = current_round_data["image_url"]
-	print("GameManager: Loading round image: ", img_path)
+	print("GameManager: Starting level index ", current_round_index, " - Loading: ", img_path)
+	
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
 		content_sprite.texture = img_tex
@@ -270,6 +274,9 @@ func _on_option_selected(selected_word):
 		handle_incorrect()
 
 func handle_correct():
+	is_transitioning = true # Set immediately
+	print("GameManager: Correct! current_round_index=", current_round_index)
+	
 	# Update spinner (Circular)
 	if score < spinners_grid.get_child_count():
 		var spinner = spinners_grid.get_child(score)
