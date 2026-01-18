@@ -86,22 +86,6 @@ func _process(delta):
 		formation.position.x = -600
 		print("GameManager: Formation wrapped around")
 
-func load_data():
-	print("GameManager: Loading data...")
-	if FileAccess.file_exists(DATA_PATH):
-		var file = FileAccess.open(DATA_PATH, FileAccess.READ)
-		var json = JSON.new()
-		var error = json.parse(file.get_as_text())
-		if error == OK:
-			words_data = json.data
-			words_data.shuffle()
-			print("GameManager: Data loaded. Count: ", words_data.size())
-		else:
-			print("GameManager: JSON Parse Error: ", json.get_error_message())
-	else:
-		print("GameManager: Data file not found!")
-		words_data = [{"id":0, "image_url":"res://assets/images/spinner_colorful.png", "correct_word":"Error", "options":["Error","A","B","C"]}]
-
 func load_texture_safe(path: String) -> Texture2D:
 	if not FileAccess.file_exists(path):
 		print("GameManager: ERROR - File NOT found at: ", path)
