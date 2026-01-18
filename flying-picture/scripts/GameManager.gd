@@ -181,9 +181,6 @@ func start_level():
 			var s = TARGET_WIDTH / float(orig_w)
 			content_sprite.scale = Vector2(s, s)
 			print("GameManager: Applied image scale: ", s)
-		
-		# Less aggressive transparency for main word images to preserve details
-		apply_transparency_shader(content_sprite, "image_safe")
 	else:
 		print("GameManager: CRITICAL - Failed to load image at: ", img_path)
 	
