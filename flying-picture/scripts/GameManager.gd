@@ -28,6 +28,7 @@ var words_pool = []
 var game_active = true
 var is_transitioning = false # Pause movement during celebrations
 var formation_speed = 100.0
+var survival_mode = false  # True when only 1 helicopter remains
 const TARGET_WIDTH = 405.0 # Reduced from 450 (10% smaller)
 
 func _ready():
@@ -376,8 +377,15 @@ func handle_incorrect():
 	# 1. Crash a helicopter for visual feedback
 	var available_indices = []
 	
+	# In survival mode (6th mistake), crash the last helicopter
+	if survival_mode:
+		# Find the last standing helicopter
+		for i in range(active_helicopters.size()):
+			if is_instance_valid(active_helicopters[i]) and !active_helicopters[i].is_crashed:
+				available_indices.append(i)
+				break
 	# For the first 4 mistakes, only crash middle helicopters (indices 1-4)
-	if mistakes_in_level < 5:
+	elif mistakes_in_level < 5:
 		for i in range(1, 5): 
 			if i < active_helicopters.size() and is_instance_valid(active_helicopters[i]) and !active_helicopters[i].is_crashed:
 				available_indices.append(i)
@@ -392,10 +400,16 @@ func handle_incorrect():
 		var idx_to_crash = available_indices.pick_random()
 		active_helicopters[idx_to_crash].crash()
 		
-		# If this is the 5th crash (an anchor), drop the image!
+		# If this is the 6th crash (in survival mode), game over!
+		if survival_mode:
+			print("GameManager: Last helicopter crashed!")
+			final_crash_and_game_over()
+			return
+		
+		# If this is the 5th crash (an anchor), enter survival mode!
 		if mistakes_in_level >= 5:
-			print("GameManager: GAME OVER - Anchor helicopter crashed! Image falling!")
-			drop_image_and_end_game(idx_to_crash)
+			print("GameManager: Anchor helicopter crashed! Entering survival mode...")
+			enter_survival_mode(idx_to_crash)
 			return
 	
 	# 2. Kill lingering tweens
