@@ -337,6 +337,9 @@ func handle_incorrect():
 	var tween_fail = create_tween()
 	tween_fail.set_meta("target", formation)
 	
+	# Wait for helicopter to fall (~0.8s) before flying away
+	tween_fail.tween_interval(0.8)
+	
 	# Faster than a win departure
 	tween_fail.tween_property(formation, "position:x", view_width + 800, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	
