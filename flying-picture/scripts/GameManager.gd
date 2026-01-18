@@ -145,23 +145,28 @@ func start_level():
 		
 	current_round_data = words_data[current_round_index]
 	
-	# Only reset formation if it's the first round or after a win
-	if active_helicopters.size() == 0:
-		reset_formation()
+	# Kill any lingering animations to prevent position conflicts
+	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
+	for t in old_tween: t.kill()
+	
+	# Always reset formation to bring back any crashed helicopters
+	reset_formation()
 	
 	var img_path = current_round_data["image_url"]
 	print("GameManager: Loading round image: ", img_path)
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
 		content_sprite.texture = img_tex
+		print("GameManager: Texture size: ", img_tex.get_size())
 		
 		# Dynamically scale to reach target width
 		var orig_w = img_tex.get_width()
 		if orig_w > 0:
 			var s = TARGET_WIDTH / float(orig_w)
 			content_sprite.scale = Vector2(s, s)
+			print("GameManager: Applied scale: ", s)
 		
-		# White to transparency shader (for content pictures which are still white/checkered)
+		# White to transparency shader
 		apply_transparency_shader(content_sprite, "white")
 	else:
 		print("GameManager: Failed to load image at: ", img_path)
@@ -176,11 +181,16 @@ func start_level():
 	
 	# Always start from left edge for a fresh fly-in
 	formation.position.x = -800
-	is_transitioning = true # Stay still during tween
+	is_transitioning = true 
+	print("GameManager: Starting fly-in from -800")
 	
 	var tween = create_tween()
+	tween.set_meta("target", formation)
 	tween.tween_property(formation, "position:x", target_center_x, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(func(): is_transitioning = false)
+	tween.tween_callback(func(): 
+		is_transitioning = false
+		print("GameManager: fly-in complete. Position: ", formation.position)
+	)
 
 func reset_formation():
 	print("GameManager: Resetting formation")
@@ -244,7 +254,9 @@ func setup_options(options):
 	# )
 
 func _on_option_selected(selected_word):
-	if !game_active: return
+	if !game_active or is_transitioning: 
+		print("GameManager: Click ignored (game_active=", game_active, ", is_transitioning=", is_transitioning, ")")
+		return
 	
 	if selected_word == current_round_data["correct_word"]:
 		handle_correct()
@@ -265,9 +277,15 @@ func handle_correct():
 	score += 1
 	current_round_index += 1
 	is_transitioning = true # Stop movement
+	print("GameManager: Correct! Stopping formation at ", formation.position)
+	
+	# Kill lingering tweens
+	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
+	for t in old_tween: t.kill()
 	
 	# Celebration animation (Scale up/down)
 	var tween_cel = create_tween()
+	tween_cel.set_meta("target", formation)
 	tween_cel.tween_property(formation, "scale", Vector2(1.15, 1.15), 0.25)
 	tween_cel.tween_property(formation, "scale", Vector2(1.0, 1.0), 0.25)
 	
