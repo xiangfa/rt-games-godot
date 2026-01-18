@@ -1,7 +1,7 @@
 extends Node2D
 
 const HelicopterScene = preload("res://scenes/Helicopter.tscn")
-const DATA_PATH = "res://assets/data/words.json"
+const ApiManagerScript = preload("res://scripts/api_manager.gd")
 
 # Nodes
 @onready var formation = $Formation
@@ -21,6 +21,8 @@ var score = 0
 var mistakes_in_level = 0
 var active_helicopters = []
 var total_spinners = 16
+var api_manager: Node
+var words_pool = []
 
 # Game State
 var game_active = true
@@ -37,8 +39,17 @@ func _ready():
 		background_rect.texture = bg_tex
 	else: print("GameManager: Failed to load background")
 
-	load_data()
+	# v2.0 API Initialization
+	api_manager = ApiManagerScript.new()
+	add_child(api_manager)
+	api_manager.data_ready.connect(_on_api_data_ready)
+	api_manager.start_initialization()
+	
 	setup_spinners()
+
+func _on_api_data_ready(pool):
+	print("GameManager: API Data Ready. Pool size: ", pool.size())
+	words_pool = pool
 	start_level()
 
 func apply_transparency_shader(target_node, mode = "white"):
@@ -142,12 +153,24 @@ func setup_spinners():
 		spinners_grid.add_child(texture_rect)
 
 func start_level():
-	print("GameManager: Starting level. Index: ", current_round_index)
-	if current_round_index >= words_data.size():
-		win_game()
+	# Celebration/Transition checks
+	if is_transitioning: return
+	
+	if words_pool.size() < 4:
+		print("GameManager: Pool too small (", words_pool.size(), "). Waiting or using mock.")
 		return
 		
-	current_round_data = words_data[current_round_index]
+	# Pick 4 unique words for this level
+	words_pool.shuffle()
+	var level_choices = words_pool.slice(0, 4)
+	
+	# Pick one as target
+	current_round_data = level_choices[0]
+	var decoys = level_choices.slice(1, 4)
+	
+	var all_words = []
+	for c in level_choices: all_words.append(c["word"])
+	all_words.shuffle() # Scramble button order
 	
 	# 1. Kill any lingering animations
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
@@ -160,11 +183,8 @@ func start_level():
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
 	
-	# 3. Always reset formation to bring back any crashed helicopters
-	reset_formation()
-	
-	var img_path = current_round_data["image_url"]
-	print("GameManager: Starting level index ", current_round_index, " - Loading: ", img_path)
+	var img_path = current_round_data["path"]
+	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
 	
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
@@ -183,7 +203,7 @@ func start_level():
 	else:
 		print("GameManager: CRITICAL - Failed to load image at: ", img_path)
 	
-	setup_options(current_round_data["options"])
+	setup_options(all_words, current_round_data["word"])
 	
 	# Entrance animation: Always ensure formation is at a visible height
 	formation.position.y = 250
@@ -239,7 +259,7 @@ func reset_formation():
 	print("GameManager: Formation created with ", active_helicopters.size(), " helicopters. Formation pos: ", formation.position)
 		
 
-func setup_options(options):
+func setup_options(options, correct_word_text):
 	for child in options_container.get_children():
 		child.queue_free()
 	for word in options:
@@ -247,7 +267,7 @@ func setup_options(options):
 		btn.text = word
 		btn.custom_minimum_size = Vector2(240, 45) # Reduced from 50
 		btn.add_theme_font_size_override("font_size", 40) # Increased from 32
-		btn.pressed.connect(_on_option_selected.bind(word))
+		btn.pressed.connect(_on_option_selected.bind(word, correct_word_text))
 		
 		# Better button visibility
 		var style = StyleBoxFlat.new()
@@ -257,23 +277,15 @@ func setup_options(options):
 		
 		options_container.add_child(btn)
 		
-	# Auto-Play for testing (Slower)
-	# get_tree().create_timer(5.0).timeout.connect(func():
-	# 	if !game_active: return
-	# 	var random_opt = options.pick_random()
-	# 	print("Auto-Play: Selecting ", random_opt)
-	# 	_on_option_selected(random_opt)
-	# )
-
-func _on_option_selected(selected_word):
+func _on_option_selected(selected_word, correct_word_text):
 	if !game_active or is_transitioning: 
 		return
 	
 	# IMMEDIATELY lock input for One-Shot logic
 	is_transitioning = true
-	print("GameManager: Answer selected: ", selected_word, " - Input locked.")
+	print("GameManager: Choice: ", selected_word, " Correct: ", correct_word_text)
 	
-	if selected_word == current_round_data["correct_word"]:
+	if selected_word == correct_word_text:
 		handle_correct()
 	else:
 		handle_incorrect()
