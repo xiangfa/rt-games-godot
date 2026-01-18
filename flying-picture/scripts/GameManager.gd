@@ -50,6 +50,8 @@ func _ready():
 func _on_api_data_ready(pool):
 	print("GameManager: API Data Ready. Pool size: ", pool.size())
 	words_pool = pool
+	# Spawn helicopters once at game start
+	reset_formation()
 	start_level()
 
 func apply_transparency_shader(target_node, mode = "white"):
@@ -163,9 +165,7 @@ func start_level():
 	content_sprite.visible = true
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
-	
-	# 3. Reset formation to spawn helicopters
-	reset_formation()
+	# Note: Do NOT reset formation here - helicopters persist across rounds
 	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
@@ -320,6 +320,12 @@ func handle_incorrect():
 	if available_indices.size() > 0:
 		var idx_to_crash = available_indices.pick_random()
 		active_helicopters[idx_to_crash].crash()
+	
+	# Check for game over (4 crashes)
+	if mistakes_in_level >= 4:
+		print("GameManager: GAME OVER - 4 helicopters crashed!")
+		game_active = false
+		return
 	
 	# 2. Kill lingering tweens
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
