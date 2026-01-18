@@ -1,0 +1,151 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8j2q4k5l6m7"]
+
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_manager"]
+[ext_resource type="PackedScene" path="res://scenes/AnimatedBackground.tscn" id="2_anim_bg"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_manager")
+
+[node name="AnimatedBackground" parent="." instance=ExtResource("2_anim_bg")]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Control" parent="UILayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainLayout" type="VBoxContainer" parent="UILayer/UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="LevelSelection" type="HBoxContainer" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Level1Button" type="Button" parent="UILayer/UI/MainLayout/LevelSelection"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "4 Words"
+
+[node name="Level2Button" type="Button" parent="UILayer/UI/MainLayout/LevelSelection"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "9 Words"
+
+[node name="HeaderSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "猜词游戏 - 是或不是"
+horizontal_alignment = 1
+
+[node name="GridSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GridContainerWrapper" type="CenterContainer" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="WordGrid" type="GridContainer" parent="UILayer/UI/MainLayout/GridContainerWrapper"]
+layout_mode = 2
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 30
+columns = 2
+
+[node name="QuestionSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="QuestionPanel" type="PanelContainer" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"PanelContainer"
+
+[node name="QuestionLabel" type="Label" parent="UILayer/UI/MainLayout/QuestionPanel"]
+custom_minimum_size = Vector2(600, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "请在心里选一个词，然后点击开始！"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ButtonsSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="AnswerButtons" type="HBoxContainer" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+theme_override_constants/separation = 80
+alignment = 1
+
+[node name="YesButton" type="Button" parent="UILayer/UI/MainLayout/AnswerButtons"]
+custom_minimum_size = Vector2(200, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "是"
+
+[node name="NoButton" type="Button" parent="UILayer/UI/MainLayout/AnswerButtons"]
+custom_minimum_size = Vector2(200, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "不是"
+
+[node name="BottomSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="UILayer/UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -220.0
+offset_right = 100.0
+offset_bottom = -140.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "开始"
+
+[node name="ResultPanel" type="PanelContainer" parent="UILayer/UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultLabel" type="Label" parent="UILayer/UI/ResultPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "🎉 猜对了！"
+horizontal_alignment = 1
+vertical_alignment = 1

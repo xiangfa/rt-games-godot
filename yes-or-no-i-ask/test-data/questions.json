@@ -1,0 +1,441 @@
+{
+    "groups": [
+        {
+            "group_id": 1.0,
+            "group_size": 4.0,
+            "start_remaining_words": [
+                "猫",
+                "狗",
+                "鸟",
+                "鱼"
+            ],
+            "states": [
+                {
+                    "no_remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟"
+                    ],
+                    "question": "它生活在水里吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟",
+                        "鱼"
+                    ],
+                    "subset_id": "狗|猫|鱼|鸟",
+                    "yes_remaining_words": [
+                        "鱼"
+                    ]
+                },
+                {
+                    "answer": "鱼",
+                    "remaining_words": [
+                        "鱼"
+                    ],
+                    "subset_id": "鱼"
+                },
+                {
+                    "no_remaining_words": [
+                        "猫",
+                        "狗"
+                    ],
+                    "question": "它会飞吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟"
+                    ],
+                    "subset_id": "狗|猫|鸟",
+                    "yes_remaining_words": [
+                        "鸟"
+                    ]
+                },
+                {
+                    "answer": "鸟",
+                    "remaining_words": [
+                        "鸟"
+                    ],
+                    "subset_id": "鸟"
+                },
+                {
+                    "no_remaining_words": [
+                        "猫"
+                    ],
+                    "question": "它会汪汪叫吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗"
+                    ],
+                    "subset_id": "狗|猫",
+                    "yes_remaining_words": [
+                        "狗"
+                    ]
+                },
+                {
+                    "answer": "狗",
+                    "remaining_words": [
+                        "狗"
+                    ],
+                    "subset_id": "狗"
+                },
+                {
+                    "answer": "猫",
+                    "remaining_words": [
+                        "猫"
+                    ],
+                    "subset_id": "猫"
+                }
+            ],
+            "words": [
+                "猫",
+                "狗",
+                "鸟",
+                "鱼"
+            ]
+        },
+        {
+            "group_id": 4.0,
+            "group_size": 9.0,
+            "start_remaining_words": [
+                "猫",
+                "狗",
+                "鸟",
+                "鱼",
+                "牛",
+                "马",
+                "猪",
+                "羊",
+                "鸡"
+            ],
+            "states": [
+                {
+                    "no_remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊",
+                        "鸡"
+                    ],
+                    "question": "它生活在水里吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟",
+                        "鱼",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊",
+                        "鸡"
+                    ],
+                    "subset_id": "牛|狗|猪|猫|羊|马|鱼|鸟|鸡",
+                    "yes_remaining_words": [
+                        "鱼"
+                    ]
+                },
+                {
+                    "answer": "鱼",
+                    "remaining_words": [
+                        "鱼"
+                    ],
+                    "subset_id": "鱼"
+                },
+                {
+                    "no_remaining_words": [
+                        "猫",
+                        "狗",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ],
+                    "question": "它会飞吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗",
+                        "鸟",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊",
+                        "鸡"
+                    ],
+                    "subset_id": "牛|狗|猪|猫|羊|马|鸟|鸡",
+                    "yes_remaining_words": [
+                        "鸟",
+                        "鸡"
+                    ]
+                },
+                {
+                    "no_remaining_words": [
+                        "鸟"
+                    ],
+                    "question": "它会下蛋吗？",
+                    "remaining_words": [
+                        "鸟",
+                        "鸡"
+                    ],
+                    "subset_id": "鸟|鸡",
+                    "yes_remaining_words": [
+                        "鸡"
+                    ]
+                },
+                {
+                    "answer": "鸡",
+                    "remaining_words": [
+                        "鸡"
+                    ],
+                    "subset_id": "鸡"
+                },
+                {
+                    "answer": "鸟",
+                    "remaining_words": [
+                        "鸟"
+                    ],
+                    "subset_id": "鸟"
+                },
+                {
+                    "no_remaining_words": [
+                        "猫",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ],
+                    "question": "它会汪汪叫吗？",
+                    "remaining_words": [
+                        "猫",
+                        "狗",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ],
+                    "subset_id": "牛|狗|猪|猫|羊|马",
+                    "yes_remaining_words": [
+                        "狗"
+                    ]
+                },
+                {
+                    "answer": "狗",
+                    "remaining_words": [
+                        "狗"
+                    ],
+                    "subset_id": "狗"
+                },
+                {
+                    "no_remaining_words": [
+                        "猫"
+                    ],
+                    "question": "它是农场里的动物吗？",
+                    "remaining_words": [
+                        "猫",
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ],
+                    "subset_id": "牛|猪|猫|羊|马",
+                    "yes_remaining_words": [
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ]
+                },
+                {
+                    "answer": "猫",
+                    "remaining_words": [
+                        "猫"
+                    ],
+                    "subset_id": "猫"
+                },
+                {
+                    "no_remaining_words": [
+                        "牛",
+                        "猪",
+                        "羊"
+                    ],
+                    "question": "它会给人骑吗？",
+                    "remaining_words": [
+                        "牛",
+                        "马",
+                        "猪",
+                        "羊"
+                    ],
+                    "subset_id": "牛|猪|羊|马",
+                    "yes_remaining_words": [
+                        "马"
+                    ]
+                },
+                {
+                    "answer": "马",
+                    "remaining_words": [
+                        "马"
+                    ],
+                    "subset_id": "马"
+                },
+                {
+                    "no_remaining_words": [
+                        "猪",
+                        "羊"
+                    ],
+                    "question": "它会产奶吗？",
+                    "remaining_words": [
+                        "牛",
+                        "猪",
+                        "羊"
+                    ],
+                    "subset_id": "牛|猪|羊",
+                    "yes_remaining_words": [
+                        "牛"
+                    ]
+                },
+                {
+                    "answer": "牛",
+                    "remaining_words": [
+                        "牛"
+                    ],
+                    "subset_id": "牛"
+                },
+                {
+                    "no_remaining_words": [
+                        "猪"
+                    ],
+                    "question": "它身上有很多毛吗？",
+                    "remaining_words": [
+                        "猪",
+                        "羊"
+                    ],
+                    "subset_id": "猪|羊",
+                    "yes_remaining_words": [
+                        "羊"
+                    ]
+                },
+                {
+                    "answer": "羊",
+                    "remaining_words": [
+                        "羊"
+                    ],
+                    "subset_id": "羊"
+                },
+                {
+                    "answer": "猪",
+                    "remaining_words": [
+                        "猪"
+                    ],
+                    "subset_id": "猪"
+                }
+            ],
+            "words": [
+                "猫",
+                "狗",
+                "鸟",
+                "鱼",
+                "牛",
+                "马",
+                "猪",
+                "羊",
+                "鸡"
+            ]
+        },
+        {
+            "group_id": 5.0,
+            "group_size": 4.0,
+            "start_remaining_words": [
+                "苹果",
+                "香蕉",
+                "西瓜",
+                "橙子"
+            ],
+            "states": [
+                {
+                    "no_remaining_words": [
+                        "苹果",
+                        "西瓜",
+                        "橙子"
+                    ],
+                    "question": "它是黄色的吗？",
+                    "remaining_words": [
+                        "苹果",
+                        "香蕉",
+                        "西瓜",
+                        "橙子"
+                    ],
+                    "subset_id": "橙子|苹果|西瓜|香蕉",
+                    "yes_remaining_words": [
+                        "香蕉"
+                    ]
+                },
+                {
+                    "answer": "香蕉",
+                    "remaining_words": [
+                        "香蕉"
+                    ],
+                    "subset_id": "香蕉"
+                },
+                {
+                    "no_remaining_words": [
+                        "苹果",
+                        "橙子"
+                    ],
+                    "question": "它很大吗？",
+                    "remaining_words": [
+                        "苹果",
+                        "西瓜",
+                        "橙子"
+                    ],
+                    "subset_id": "橙子|苹果|西瓜",
+                    "yes_remaining_words": [
+                        "西瓜"
+                    ]
+                },
+                {
+                    "answer": "西瓜",
+                    "remaining_words": [
+                        "西瓜"
+                    ],
+                    "subset_id": "西瓜"
+                },
+                {
+                    "no_remaining_words": [
+                        "苹果"
+                    ],
+                    "question": "它是橙色的吗？",
+                    "remaining_words": [
+                        "苹果",
+                        "橙子"
+                    ],
+                    "subset_id": "橙子|苹果",
+                    "yes_remaining_words": [
+                        "橙子"
+                    ]
+                },
+                {
+                    "answer": "橙子",
+                    "remaining_words": [
+                        "橙子"
+                    ],
+                    "subset_id": "橙子"
+                },
+                {
+                    "answer": "苹果",
+                    "remaining_words": [
+                        "苹果"
+                    ],
+                    "subset_id": "苹果"
+                }
+            ],
+            "words": [
+                "苹果",
+                "香蕉",
+                "西瓜",
+                "橙子"
+            ]
+        }
+    ]
+}
