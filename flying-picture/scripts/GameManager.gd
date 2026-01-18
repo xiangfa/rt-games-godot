@@ -24,6 +24,7 @@ var total_spinners = 16
 
 # Game State
 var game_active = true
+var is_transitioning = false # Pause movement during celebrations
 var formation_speed = 100.0
 const TARGET_WIDTH = 405.0 # Reduced from 450 (10% smaller)
 
@@ -58,7 +59,7 @@ func apply_transparency_shader(target_node: CanvasItem, mode: String = "magenta"
 	target_node.material = mat
 
 func _process(delta):
-	if !game_active: return
+	if !game_active or is_transitioning: return
 	
 	# Continuous Movement Right
 	formation.position.x += formation_speed * delta
@@ -173,11 +174,13 @@ func start_level():
 	var view_size = get_viewport().get_visible_rect().size
 	var target_center_x = view_size.x / 2.0
 	
-	# If we are starting fresh or from far left, fly in to center
-	if formation.position.x < -100 or formation.position.x > view_size.x + 100:
-		formation.position.x = -800
-		var tween = create_tween()
-		tween.tween_property(formation, "position:x", target_center_x, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	# Always start from left edge for a fresh fly-in
+	formation.position.x = -800
+	is_transitioning = true # Stay still during tween
+	
+	var tween = create_tween()
+	tween.tween_property(formation, "position:x", target_center_x, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func(): is_transitioning = false)
 
 func reset_formation():
 	print("GameManager: Resetting formation")
@@ -261,11 +264,18 @@ func handle_correct():
 	
 	score += 1
 	current_round_index += 1
+	is_transitioning = true # Stop movement
 	
-	# Celebration animation
+	# Celebration animation (Scale up/down)
 	var tween_cel = create_tween()
-	tween_cel.tween_property(formation, "scale", Vector2(1.2, 1.2), 0.2)
-	tween_cel.tween_property(formation, "scale", Vector2(1.0, 1.0), 0.2)
+	tween_cel.tween_property(formation, "scale", Vector2(1.15, 1.15), 0.25)
+	tween_cel.tween_property(formation, "scale", Vector2(1.0, 1.0), 0.25)
+	
+	# Departure: Fly off to the right
+	var view_width = get_viewport().get_visible_rect().size.x
+	tween_cel.tween_property(formation, "position:x", view_width + 800, 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	
+	# Start next level
 	tween_cel.tween_callback(start_level)
 
 func handle_incorrect():
