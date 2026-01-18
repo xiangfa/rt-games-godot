@@ -37,25 +37,28 @@ func load_textures():
 	
 	# Use standard load() as primary (more reliable for imported assets)
 	var body_tex = load("res://assets/images/helicopter.png")
+	body_sprite.material = null
 	if body_tex: 
 		body_sprite.texture = body_tex
-		# Shader no longer needed for helicopters as they have native alpha now
-		# if root.has_method("apply_transparency_shader"):
-		# 	root.apply_transparency_shader(body_sprite, "white")
+		if root.has_method("apply_transparency_shader"):
+			root.apply_transparency_shader(body_sprite, "white")
 	elif root.has_method("load_texture_safe"):
-		# Fallback to safe loader if standard load fails
 		body_tex = root.load_texture_safe("res://assets/images/helicopter.png")
 		if body_tex:
 			body_sprite.texture = body_tex
+			root.apply_transparency_shader(body_sprite, "white")
 
 	var prop_tex = load("res://assets/images/propeller.png")
+	prop_sprite.material = null
 	if prop_tex: 
 		prop_sprite.texture = prop_tex
+		if root.has_method("apply_transparency_shader"):
+			root.apply_transparency_shader(prop_sprite, "white")
 	elif root.has_method("load_texture_safe"):
-		# Fallback to safe loader for propeller too
 		prop_tex = root.load_texture_safe("res://assets/images/propeller.png")
 		if prop_tex:
 			prop_sprite.texture = prop_tex
+			root.apply_transparency_shader(prop_sprite, "white")
 	
 	if not prop_sprite.texture:
 		# Ultimate fallback visual if even safe load fails
@@ -70,7 +73,9 @@ func load_textures():
 	var smoke_tex = root.load_texture_safe("res://assets/images/smoke.png")
 	if smoke_tex: 
 		smoke_particles.texture = smoke_tex
-		root.apply_transparency_shader(smoke_particles, "white")
+		# Explicitly applying material here if we want to keep shader for smoke
+		# but for now let's just use raw alpha to be safe
+		smoke_particles.material = null
 
 func setup_animation():
 	var lib = AnimationLibrary.new()

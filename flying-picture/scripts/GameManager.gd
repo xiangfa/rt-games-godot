@@ -99,20 +99,27 @@ func load_texture_safe(path: String) -> Texture2D:
 		print("GameManager: ERROR - File NOT found at: ", path)
 		return null
 		
+	# 1. Try standard load first
 	var tex = load(path)
 	if tex:
 		return tex
 		
-	print("GameManager: Standard load failed, trying Image.load_from_file for: ", path)
+	# 2. Try direct Image load (bypasses .import system)
 	var img = Image.new()
-	var global_path = ProjectSettings.globalize_path(path)
-	var err = img.load(global_path)
+	var err = img.load(path)
+	
+	if err != OK:
+		# Fallback to globalized path
+		var global_path = ProjectSettings.globalize_path(path)
+		err = img.load(global_path)
+	
 	if err == OK:
 		var image_tex = ImageTexture.create_from_image(img)
-		return image_tex
-	else:
-		print("GameManager: Image.load failed with error: ", err)
-		return null
+		if image_tex:
+			return image_tex
+			
+	print("GameManager: CRITICAL - All loading attempts failed for: ", path, " (Error: ", err, ")")
+	return null
 
 func setup_spinners():
 	print("GameManager: Setting up spinners (Circular Layout)")
