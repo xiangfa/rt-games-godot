@@ -431,6 +431,55 @@ func handle_incorrect():
 	current_round_index += 1
 	tween_fail.tween_callback(start_level)
 
+func enter_survival_mode(crashed_anchor_index: int):
+	print("GameManager: Entering SURVIVAL MODE - Last helicopter standing!")
+	survival_mode = true
+	
+	# Determine which helicopter survived (the opposite anchor)
+	var surviving_helicopter_index = 5 if crashed_anchor_index == 0 else 0
+	
+	# Animate the transition to survival mode
+	var tilt_tween = create_tween()
+	tilt_tween.set_parallel(true)
+	
+	# Tilt the screen frame 90 degrees (image hangs from one corner)
+	var tilt_angle = PI / 2 if crashed_anchor_index == 0 else -PI / 2
+	tilt_tween.tween_property(screen_sprite, "rotation", tilt_angle, 1.0).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	
+	# Slight drop as it adjusts to new balance
+	tilt_tween.tween_property(formation, "position:y", formation.position.y + 50, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	
+	# Wait for animation, then continue to next level
+	await tilt_tween.finished
+	await get_tree().create_timer(0.5).timeout
+	
+	# Continue the game in survival mode!
+	current_round_index += 1
+	start_level()
+
+func final_crash_and_game_over():
+	print("GameManager: Final helicopter crashed! Game Over!")
+	game_active = false
+	
+	# Dramatic final fall
+	var final_tween = create_tween()
+	final_tween.set_parallel(true)
+	
+	# Spin as it falls
+	final_tween.tween_property(formation, "rotation", formation.rotation + PI * 2, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Drop down
+	final_tween.tween_property(formation, "position:y", get_viewport().get_visible_rect().size.y + 500, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Fade out
+	final_tween.tween_property(formation, "modulate:a", 0.0, 1.5)
+	
+	# Wait for animation to finish, pause, then show game over
+	await final_tween.finished
+	await get_tree().create_timer(0.5).timeout
+	game_over()
+	print("GameManager: 💥 GAME OVER! All helicopters crashed! Mistakes: ", mistakes_in_level, " 💥")
+
 func drop_image_and_end_game(crashed_anchor_index: int):
 	print("GameManager: Image dropping from side of crashed anchor helicopter!")
 	game_active = false
