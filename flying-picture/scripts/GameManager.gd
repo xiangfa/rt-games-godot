@@ -29,6 +29,7 @@ var game_active = true
 var is_transitioning = false # Pause movement during celebrations
 var formation_speed = 100.0
 var survival_mode = false  # True when only 1 helicopter remains
+var survival_pivot = Vector2.ZERO # Pivot point for survival mode swinging
 const TARGET_WIDTH = 405.0 # Reduced from 450 (10% smaller)
 
 func _ready():
@@ -169,10 +170,77 @@ func start_level():
 	# Note: Do NOT reset formation here - helicopters persist across rounds
 	# Also preserve screen_sprite rotation in survival mode
 	if not survival_mode:
-		screen_sprite.rotation = 0  # Only reset rotation if not in survival mode
+		screen_sprite.rotation = 0
+		screen_sprite.position = Vector2.ZERO
 	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
+
+func set_survival_rotation(angle: float):
+	screen_sprite.rotation = angle
+	# Calculate position offset to simulate pivoting around survival_pivot
+	# NewPos = Pivot - Pivot.rotated(angle)
+	screen_sprite.position = survival_pivot - survival_pivot.rotated(angle)
+
+func enter_survival_mode(crashed_anchor_index: int):
+	print("GameManager: Entering SURVIVAL MODE - Last helicopter standing!")
+	survival_mode = true
+	
+	# Determine pivot point (The SURVIVING anchor)
+	# If 0 crashed (Left), hinge on 5 (Right) -> (202.5, -90)
+	# If 5 crashed (Right), hinge on 0 (Left) -> (-202.5, -90)
+	if crashed_anchor_index == 0:
+		survival_pivot = Vector2(202.5, -90)
+	else:
+		survival_pivot = Vector2(-202.5, -90)
+		
+	# Wait for the 5th helicopter to start falling
+	await get_tree().create_timer(0.4).timeout
+	
+	# Determine which side dropped
+	var tilt_direction = -1 if crashed_anchor_index == 0 else 1  # Left anchor crashed = tilt left
+	
+	var swing_tween = create_tween()
+	
+	# Phase 1: Initial drop to slightly past 45 degrees
+	# Use tween_method to update both rotation and position for pinning
+	var initial_drop_angle = tilt_direction * (PI / 4 + 0.2)
+	swing_tween.tween_method(set_survival_rotation, 0.0, initial_drop_angle, 0.8).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	
+	# Phase 2: Swinging back and forth (pendulum motion)
+	var swing_count = 5
+	var current_angle = initial_drop_angle
+	var base_angle = tilt_direction * PI / 4
+	
+	for i in range(swing_count):
+		# Each swing reduces amplitude exponentially
+		var damping_factor = pow(0.6, i + 1)
+		var swing_amplitude = (tilt_direction * 0.2) * damping_factor
+		var swing_duration = 0.4 * (1.0 - i * 0.1)
+		
+		# Swing to opposite side of base
+		var target_1 = base_angle - swing_amplitude
+		swing_tween.tween_method(set_survival_rotation, current_angle, target_1, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		current_angle = target_1
+		
+		# Swing back
+		var target_2 = base_angle + swing_amplitude
+		swing_tween.tween_method(set_survival_rotation, current_angle, target_2, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		current_angle = target_2
+	
+	# Phase 3: Finally settle at 45 degrees exactly
+	var final_angle = tilt_direction * PI / 4
+	swing_tween.tween_method(set_survival_rotation, current_angle, final_angle, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	
+	# Wait for all animations to complete
+	await swing_tween.finished
+	await get_tree().create_timer(0.3).timeout
+	
+	print("GameManager: Survival mode ready - image hanging from one corner!")
+	
+	# Continue the game in survival mode!
+	current_round_index += 1
+	start_level()
 	
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
