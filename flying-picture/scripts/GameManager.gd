@@ -167,6 +167,9 @@ func start_level():
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
 	
+	# 3. Reset formation to spawn helicopters
+	reset_formation()
+	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
 	
