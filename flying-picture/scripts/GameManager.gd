@@ -145,11 +145,17 @@ func start_level():
 		
 	current_round_data = words_data[current_round_index]
 	
-	# Kill any lingering animations to prevent position conflicts
+	# 1. Kill any lingering animations
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
 	for t in old_tween: t.kill()
 	
-	# Always reset formation to bring back any crashed helicopters
+	# 2. Reset visual state to defaults
+	formation.scale = Vector2.ONE
+	formation.modulate = Color.WHITE
+	content_sprite.visible = true
+	content_sprite.modulate = Color.WHITE
+	
+	# 3. Always reset formation to bring back any crashed helicopters
 	reset_formation()
 	
 	var img_path = current_round_data["image_url"]
@@ -157,19 +163,19 @@ func start_level():
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
 		content_sprite.texture = img_tex
-		print("GameManager: Texture size: ", img_tex.get_size())
+		print("GameManager: Texture loaded successfully: ", img_path, " Size: ", img_tex.get_size())
 		
 		# Dynamically scale to reach target width
 		var orig_w = img_tex.get_width()
 		if orig_w > 0:
 			var s = TARGET_WIDTH / float(orig_w)
 			content_sprite.scale = Vector2(s, s)
-			print("GameManager: Applied scale: ", s)
+			print("GameManager: Applied image scale: ", s)
 		
-		# White to transparency shader
-		apply_transparency_shader(content_sprite, "white")
+		# Less aggressive transparency for main word images to preserve details
+		apply_transparency_shader(content_sprite, "image_safe")
 	else:
-		print("GameManager: Failed to load image at: ", img_path)
+		print("GameManager: CRITICAL - Failed to load image at: ", img_path)
 	
 	setup_options(current_round_data["options"])
 	
