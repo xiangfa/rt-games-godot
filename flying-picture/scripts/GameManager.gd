@@ -86,21 +86,6 @@ func _process(delta):
 		formation.position.x = -600
 		print("GameManager: Formation wrapped around")
 
-func load_data():
-	print("GameManager: Loading data...")
-	if FileAccess.file_exists(DATA_PATH):
-		var file = FileAccess.open(DATA_PATH, FileAccess.READ)
-		var json = JSON.new()
-		var error = json.parse(file.get_as_text())
-		if error == OK:
-			words_data = json.data
-			words_data.shuffle()
-			print("GameManager: Data loaded. Count: ", words_data.size())
-		else:
-			print("GameManager: JSON Parse Error: ", json.get_error_message())
-	else:
-		print("GameManager: Data file not found!")
-		words_data = [{"id":0, "image_url":"res://assets/images/spinner_colorful.png", "correct_word":"Error", "options":["Error","A","B","C"]}]
 
 func load_texture_safe(path: String) -> Texture2D:
 	if not FileAccess.file_exists(path):
@@ -153,9 +138,7 @@ func setup_spinners():
 		spinners_grid.add_child(texture_rect)
 
 func start_level():
-	# Celebration/Transition checks
-	if is_transitioning: return
-	
+	# 0. Selection: Always pick from the pool
 	if words_pool.size() < 4:
 		print("GameManager: Pool too small (", words_pool.size(), "). Waiting or using mock.")
 		return
@@ -183,6 +166,9 @@ func start_level():
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
 	
+	# 3. Always reset formation to bring back any crashed helicopters
+	reset_formation()
+	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
 	
@@ -191,15 +177,12 @@ func start_level():
 		content_sprite.texture = img_tex
 		print("GameManager: Texture loaded successfully: ", img_path, " Size: ", img_tex.get_size())
 		
-		# Dynamically scale to reach target width
+		# Scale to target width
 		var orig_w = img_tex.get_width()
 		if orig_w > 0:
 			var s = TARGET_WIDTH / float(orig_w)
 			content_sprite.scale = Vector2(s, s)
 			print("GameManager: Applied image scale: ", s)
-		
-		# Less aggressive transparency for main word images to preserve details
-		apply_transparency_shader(content_sprite, "image_safe")
 	else:
 		print("GameManager: CRITICAL - Failed to load image at: ", img_path)
 	
