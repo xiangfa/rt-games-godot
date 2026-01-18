@@ -167,6 +167,9 @@ func start_level():
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
 	# Note: Do NOT reset formation here - helicopters persist across rounds
+	# Also preserve screen_sprite rotation in survival mode
+	if not survival_mode:
+		screen_sprite.rotation = 0  # Only reset rotation if not in survival mode
 	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
@@ -446,24 +449,27 @@ func enter_survival_mode(crashed_anchor_index: int):
 	drop_tween.tween_property(screen_sprite, "rotation", tilt_direction * PI / 4, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	await drop_tween.finished
 	
-	# Phase 2: Swinging back and forth (pendulum motion)
+	# Phase 2: Swinging back and forth (pendulum motion with proper dampening)
 	var swing_tween = create_tween()
-	var swing_count = 4  # Number of swings
-	var swing_angle = tilt_direction * PI / 4  # Starting swing angle
+	var swing_count = 5  # Number of swings
+	var current_angle = tilt_direction * PI / 4  # Starting position
 	
 	for i in range(swing_count):
-		# Swing to opposite side (decreasing amplitude each time)
-		var amplitude = swing_angle * (1.0 - i * 0.2)  # Reduce by 20% each swing
-		swing_tween.tween_property(screen_sprite, "rotation", -amplitude, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		swing_tween.tween_property(screen_sprite, "rotation", amplitude, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		# Each swing reduces amplitude exponentially (more natural physics)
+		var damping_factor = pow(0.6, i)  # Exponential decay
+		var swing_amplitude = (tilt_direction * PI / 4) * damping_factor
+		
+		# Swing duration also decreases slightly
+		var swing_duration = 0.5 * (1.0 - i * 0.1)
+		
+		# Swing to opposite side
+		swing_tween.tween_property(screen_sprite, "rotation", -swing_amplitude, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		# Swing back
+		swing_tween.tween_property(screen_sprite, "rotation", swing_amplitude, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	
 	# Phase 3: Finally settle at 90 degrees (hanging from one corner)
 	var final_angle = tilt_direction * PI / 2
-	swing_tween.tween_property(screen_sprite, "rotation", final_angle, 0.8).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
-	
-	# Slight drop as it settles
-	swing_tween.set_parallel(true)
-	swing_tween.tween_property(formation, "position:y", formation.position.y + 30, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	swing_tween.tween_property(screen_sprite, "rotation", final_angle, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
 	# Wait for all animations to complete
 	await swing_tween.finished
