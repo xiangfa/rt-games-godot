@@ -413,13 +413,9 @@ func handle_incorrect():
 	# Faster than a win departure
 	tween_fail.tween_property(formation, "position:x", view_width + 800, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	
-	# 4. Progress round
+	# 4. Progress round and continue
 	current_round_index += 1
-	
-	if mistakes_in_level >= 4:
-		tween_fail.tween_callback(game_over)
-	else:
-		tween_fail.tween_callback(start_level)
+	tween_fail.tween_callback(start_level)
 
 func drop_image_and_end_game(crashed_anchor_index: int):
 	print("GameManager: Image dropping from side of crashed anchor helicopter!")
@@ -441,8 +437,10 @@ func drop_image_and_end_game(crashed_anchor_index: int):
 	# Fade out
 	drop_tween.tween_property(formation, "modulate:a", 0.0, 1.5)
 	
-	# Show game over message after drop
+	# Wait for animation to finish, pause, then show game over
 	await drop_tween.finished
+	await get_tree().create_timer(0.5).timeout  # Short pause
+	game_over()
 	print("GameManager: 💥 GAME OVER! The image fell! Mistakes: ", mistakes_in_level, " 💥")
 
 func spawn_replacement_helicopter():
