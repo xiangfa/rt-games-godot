@@ -137,9 +137,6 @@ func setup_spinners():
 		spinners_grid.add_child(texture_rect)
 
 func start_level():
-	# Celebration/Transition checks
-	if is_transitioning: return
-	
 	if words_pool.size() < 4:
 		print("GameManager: Pool too small (", words_pool.size(), "). Waiting or using mock.")
 		return
