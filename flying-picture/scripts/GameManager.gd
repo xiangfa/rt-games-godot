@@ -375,19 +375,28 @@ func handle_incorrect():
 	
 	# 1. Crash a helicopter for visual feedback
 	var available_indices = []
-	for i in range(1, 5): 
-		if i < active_helicopters.size() and is_instance_valid(active_helicopters[i]) and !active_helicopters[i].is_crashed:
-			available_indices.append(i)
+	
+	# For the first 4 mistakes, only crash middle helicopters (indices 1-4)
+	if mistakes_in_level < 5:
+		for i in range(1, 5): 
+			if i < active_helicopters.size() and is_instance_valid(active_helicopters[i]) and !active_helicopters[i].is_crashed:
+				available_indices.append(i)
+	else:
+		# On 5th mistake, crash one of the anchor helicopters (0 or 5)
+		if is_instance_valid(active_helicopters[0]) and !active_helicopters[0].is_crashed:
+			available_indices.append(0)
+		if active_helicopters.size() > 5 and is_instance_valid(active_helicopters[5]) and !active_helicopters[5].is_crashed:
+			available_indices.append(5)
 			
 	if available_indices.size() > 0:
 		var idx_to_crash = available_indices.pick_random()
 		active_helicopters[idx_to_crash].crash()
-	
-	# Check for game over (4 crashes)
-	if mistakes_in_level >= 4:
-		print("GameManager: GAME OVER - 4 helicopters crashed!")
-		game_active = false
-		return
+		
+		# If this is the 5th crash (an anchor), drop the image!
+		if mistakes_in_level >= 5:
+			print("GameManager: GAME OVER - Anchor helicopter crashed! Image falling!")
+			drop_image_and_end_game(idx_to_crash)
+			return
 	
 	# 2. Kill lingering tweens
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
