@@ -33,12 +33,6 @@ const TARGET_WIDTH = 405.0 # Reduced from 450 (10% smaller)
 func _ready():
 	print("GameManager: _ready called. Viewport size: ", get_viewport().get_visible_rect().size)
 	
-	# Initial Asset Load
-	var bg_tex = load_texture_safe("res://assets/images/background.png")
-	if bg_tex: 
-		background_rect.texture = bg_tex
-	else: print("GameManager: Failed to load background")
-
 	# v2.0 API Initialization
 	api_manager = ApiManagerScript.new()
 	add_child(api_manager)
@@ -46,6 +40,8 @@ func _ready():
 	api_manager.start_initialization()
 	
 	setup_spinners()
+	# Spawn helicopters ONCE at game start
+	reset_formation()
 
 func _on_api_data_ready(pool):
 	print("GameManager: API Data Ready. Pool size: ", pool.size())
@@ -181,8 +177,7 @@ func start_level():
 	content_sprite.texture = null # Clear old texture
 	content_sprite.material = null # Ensure no shaders persist
 	
-	# 3. Always reset formation to bring back any crashed helicopters
-	reset_formation()
+	# v2.1: DO NOT reset formation here anymore. Keep crashes persistent.
 	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
