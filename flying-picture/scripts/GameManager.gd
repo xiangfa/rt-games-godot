@@ -421,6 +421,30 @@ func handle_incorrect():
 	else:
 		tween_fail.tween_callback(start_level)
 
+func drop_image_and_end_game(crashed_anchor_index: int):
+	print("GameManager: Image dropping from side of crashed anchor helicopter!")
+	game_active = false
+	
+	# Determine which side the image should tilt/drop from
+	var tilt_direction = -1 if crashed_anchor_index == 0 else 1  # Left anchor = tilt left, right anchor = tilt right
+	
+	# Animate the image dropping
+	var drop_tween = create_tween()
+	drop_tween.set_parallel(true)
+	
+	# Tilt the screen frame
+	drop_tween.tween_property(screen_sprite, "rotation", tilt_direction * PI / 6, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Drop the formation down
+	drop_tween.tween_property(formation, "position:y", get_viewport().get_visible_rect().size.y + 500, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Fade out
+	drop_tween.tween_property(formation, "modulate:a", 0.0, 1.5)
+	
+	# Show game over message after drop
+	await drop_tween.finished
+	print("GameManager: 💥 GAME OVER! The image fell! Mistakes: ", mistakes_in_level, " 💥")
+
 func spawn_replacement_helicopter():
 	# No replacement anymore per design? 
 	# Design says: "Incorrect: One helicopter crashes! The team struggles but keeps flying."
