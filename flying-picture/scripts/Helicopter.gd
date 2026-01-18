@@ -99,9 +99,9 @@ func _process(delta):
 		var hover_y = sin(Time.get_ticks_msec() / 200.0 + time_offset) * 5.0
 		position.y = original_local_y + hover_y
 
-func crash():
-	if is_crashed or is_anchor:
-		return
+func crash(force: bool = false):
+	if is_crashed: return
+	if is_anchor and not force: return
 	is_crashed = true
 	animation_player.pause()
 	# Set particle size directly - reduced to 10% of previous 0.3/0.6

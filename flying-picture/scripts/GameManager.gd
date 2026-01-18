@@ -401,19 +401,23 @@ func handle_incorrect():
 			
 	if available_indices.size() > 0:
 		var idx_to_crash = available_indices.pick_random()
-		active_helicopters[idx_to_crash].crash()
 		
 		# If this is the 6th crash (in survival mode), game over!
 		if survival_mode:
 			print("GameManager: Last helicopter crashed!")
+			active_helicopters[idx_to_crash].crash(true) # Force crash even if anchor
 			final_crash_and_game_over()
 			return
 		
 		# If this is the 5th crash (an anchor), enter survival mode!
 		if mistakes_in_level >= 5:
 			print("GameManager: Anchor helicopter crashed! Entering survival mode...")
+			active_helicopters[idx_to_crash].crash(true) # Force crash for anchor
 			enter_survival_mode(idx_to_crash)
 			return
+			
+		# Normal crash
+		active_helicopters[idx_to_crash].crash()
 	
 	# 2. Kill lingering tweens
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
