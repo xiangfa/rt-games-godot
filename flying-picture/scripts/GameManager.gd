@@ -115,7 +115,7 @@ func setup_spinners():
 	spinners_grid.position = Vector2(1100, 100)
 	
 	var center = Vector2(0, 0) # Relative to SpinnersGrid node
-	var radius = 80.0
+	var radius = 70.0 # Reduced from 80
 	
 	for i in range(total_spinners):
 		var texture_rect = TextureRect.new()
@@ -220,7 +220,7 @@ func setup_options(options):
 	for word in options:
 		var btn = Button.new()
 		btn.text = word
-		btn.custom_minimum_size = Vector2(240, 50) # Reduced from 60
+		btn.custom_minimum_size = Vector2(240, 45) # Reduced from 50
 		btn.add_theme_font_size_override("font_size", 40) # Increased from 32
 		btn.pressed.connect(_on_option_selected.bind(word))
 		
