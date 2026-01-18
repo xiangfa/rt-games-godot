@@ -39,26 +39,23 @@ func load_textures():
 	var body_tex = load("res://assets/images/helicopter.png")
 	if body_tex: 
 		body_sprite.texture = body_tex
-		if root.has_method("apply_transparency_shader"):
-			root.apply_transparency_shader(body_sprite, "white")
+		# Shader no longer needed for helicopters as they have native alpha now
+		# if root.has_method("apply_transparency_shader"):
+		# 	root.apply_transparency_shader(body_sprite, "white")
 	elif root.has_method("load_texture_safe"):
 		# Fallback to safe loader if standard load fails
 		body_tex = root.load_texture_safe("res://assets/images/helicopter.png")
 		if body_tex:
 			body_sprite.texture = body_tex
-			root.apply_transparency_shader(body_sprite, "white")
 
 	var prop_tex = load("res://assets/images/propeller.png")
 	if prop_tex: 
 		prop_sprite.texture = prop_tex
-		if root.has_method("apply_transparency_shader"):
-			root.apply_transparency_shader(prop_sprite, "white")
 	elif root.has_method("load_texture_safe"):
 		# Fallback to safe loader for propeller too
 		prop_tex = root.load_texture_safe("res://assets/images/propeller.png")
 		if prop_tex:
 			prop_sprite.texture = prop_tex
-			root.apply_transparency_shader(prop_sprite, "white")
 	
 	if not prop_sprite.texture:
 		# Ultimate fallback visual if even safe load fails

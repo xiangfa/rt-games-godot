@@ -57,18 +57,25 @@ func apply_transparency_shader(target_node, mode = "white"):
 	
 	var mat = ShaderMaterial.new()
 	mat.shader = Shader.new()
-	var code = "shader_type canvas_item;\n"
 	
-	# Tolerance: 0.2 for UI/Propellers (Aggressive), 0.1 for Round Images (Safe)
-	var tolerance = 0.2
+	# Tolerance: 0.2 for UI, 0.08 for Word Images
+	var tol = 0.2
 	if mode == "image_safe":
-		tolerance = 0.08 # Even safer for images
+		tol = 0.08
 		
-	code += "void fragment() { vec4 color = texture(TEXTURE, UV); "
-	code += "float max_val = max(max(color.r, color.g), color.b); "
-	code += "float min_val = min(min(color.r, color.g), color.b); "
-	code += "bool is_neutral = (max_val - min_val) < " + str(tolerance) + " && color.a > 0.1; "
-	code += "if (is_neutral) { color.a = 0.0; } COLOR = color; }"
+	var code = """
+shader_type canvas_item;
+void fragment() {
+	vec4 color = texture(TEXTURE, UV);
+	float m_max = max(max(color.r, color.g), color.b);
+	float m_min = min(min(color.r, color.g), color.b);
+	bool is_neutral = (m_max - m_min) < %.2f;
+	if (is_neutral && color.a > 0.1) {
+		color.a = 0.0;
+	}
+	COLOR = color;
+}
+""" % tol
 	
 	mat.shader.code = code
 	target_node.material = mat
@@ -165,6 +172,7 @@ func start_level():
 	content_sprite.visible = true
 	content_sprite.modulate = Color.WHITE
 	content_sprite.texture = null # Clear old texture
+	content_sprite.material = null # Ensure no shaders persist
 	
 	# 3. Always reset formation to bring back any crashed helicopters
 	reset_formation()
