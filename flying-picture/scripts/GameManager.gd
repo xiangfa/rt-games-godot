@@ -81,12 +81,12 @@ func _process(delta):
 	# Continuous Movement Right
 	formation.position.x += formation_speed * delta
 	
-	# Screen Wrap Logic
-	# Use viewport width relative to wrap
+	# Screen Wrap Logic - trigger new level when wrapping
 	var viewport_width = get_viewport().get_visible_rect().size.x
 	if formation.position.x > viewport_width + 600:
-		formation.position.x = -600
-		print("GameManager: Formation wrapped around")
+		print("GameManager: Formation wrapped around - starting new level")
+		current_round_index += 1
+		start_level()
 
 func load_texture_safe(path: String) -> Texture2D:
 	if not FileAccess.file_exists(path):
