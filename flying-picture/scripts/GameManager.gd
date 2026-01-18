@@ -147,6 +147,8 @@ func start_level():
 		win_game()
 		return
 		
+	current_round_data = words_data[current_round_index]
+	
 	# 1. Kill any lingering animations
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
 	for t in old_tween: t.kill()
