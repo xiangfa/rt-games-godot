@@ -290,6 +290,13 @@ func handle_correct():
 	is_transitioning = true # Stop movement
 	print("GameManager: Correct! Stopping formation at ", formation.position)
 	
+	# Check for VICTORY - all spinners colored!
+	if score >= total_spinners:
+		print("GameManager: VICTORY! All spinners colored!")
+		game_active = false
+		show_victory_fireworks()
+		return
+	
 	# Kill lingering tweens
 	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
 	for t in old_tween: t.kill()
@@ -306,6 +313,50 @@ func handle_correct():
 	
 	# Start next level
 	tween_cel.tween_callback(start_level)
+
+func show_victory_fireworks():
+	print("GameManager: Showing victory fireworks!")
+	
+	# Create multiple firework particle emitters
+	for i in range(5):
+		var firework = CPUParticles2D.new()
+		add_child(firework)
+		
+		# Random position across screen
+		var viewport_size = get_viewport().get_visible_rect().size
+		firework.position = Vector2(
+			randf_range(200, viewport_size.x - 200),
+			randf_range(100, viewport_size.y - 100)
+		)
+		
+		# Firework settings
+		firework.emitting = true
+		firework.amount = 50
+		firework.lifetime = 2.0
+		firework.one_shot = true
+		firework.explosiveness = 1.0
+		firework.direction = Vector2(0, -1)
+		firework.spread = 180
+		firework.gravity = Vector2(0, 200)
+		firework.initial_velocity_min = 100.0
+		firework.initial_velocity_max = 200.0
+		firework.scale_amount_min = 2.0
+		firework.scale_amount_max = 4.0
+		
+		# Random colors for each firework
+		var colors = [
+			Color.RED, Color.YELLOW, Color.GREEN, 
+			Color.CYAN, Color.MAGENTA, Color.ORANGE
+		]
+		firework.color = colors[i % colors.size()]
+		
+		# Delay each firework slightly
+		await get_tree().create_timer(i * 0.3).timeout
+		firework.restart()
+	
+	# Show victory message after fireworks
+	await get_tree().create_timer(3.0).timeout
+	print("GameManager: Game Complete! Final Score: ", score, "/", total_spinners)
 
 func handle_incorrect():
 	print("GameManager: Incorrect! current_round_index=", current_round_index)
