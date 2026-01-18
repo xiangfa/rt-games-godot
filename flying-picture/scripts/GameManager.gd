@@ -31,6 +31,7 @@ var formation_speed = 100.0
 var survival_mode = false  # True when only 1 helicopter remains
 var survival_pivot = Vector2.ZERO # Pivot point for survival mode swinging
 const TARGET_WIDTH = 405.0 # Reduced from 450 (10% smaller)
+const INITIAL_SCREEN_POS = Vector2(-202.5, -10) # Matching Game.tscn offsets
 
 func _ready():
 	print("GameManager: _ready called. Viewport size: ", get_viewport().get_visible_rect().size)
@@ -171,77 +172,11 @@ func start_level():
 	# Also preserve screen_sprite rotation in survival mode
 	if not survival_mode:
 		screen_sprite.rotation = 0
-		screen_sprite.position = Vector2.ZERO
+		screen_sprite.position = INITIAL_SCREEN_POS
 	
 	var img_path = current_round_data["path"]
 	print("GameManager: Starting level index ", current_round_index, " - Target: ", current_round_data["word"])
 
-func set_survival_rotation(angle: float):
-	screen_sprite.rotation = angle
-	# Calculate position offset to simulate pivoting around survival_pivot
-	# NewPos = Pivot - Pivot.rotated(angle)
-	screen_sprite.position = survival_pivot - survival_pivot.rotated(angle)
-
-func enter_survival_mode(crashed_anchor_index: int):
-	print("GameManager: Entering SURVIVAL MODE - Last helicopter standing!")
-	survival_mode = true
-	
-	# Determine pivot point (The SURVIVING anchor)
-	# If 0 crashed (Left), hinge on 5 (Right) -> (202.5, -90)
-	# If 5 crashed (Right), hinge on 0 (Left) -> (-202.5, -90)
-	if crashed_anchor_index == 0:
-		survival_pivot = Vector2(202.5, -90)
-	else:
-		survival_pivot = Vector2(-202.5, -90)
-		
-	# Wait for the 5th helicopter to start falling
-	await get_tree().create_timer(0.4).timeout
-	
-	# Determine which side dropped
-	var tilt_direction = -1 if crashed_anchor_index == 0 else 1  # Left anchor crashed = tilt left
-	
-	var swing_tween = create_tween()
-	
-	# Phase 1: Initial drop to slightly past 45 degrees
-	# Use tween_method to update both rotation and position for pinning
-	var initial_drop_angle = tilt_direction * (PI / 4 + 0.2)
-	swing_tween.tween_method(set_survival_rotation, 0.0, initial_drop_angle, 0.8).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-	
-	# Phase 2: Swinging back and forth (pendulum motion)
-	var swing_count = 5
-	var current_angle = initial_drop_angle
-	var base_angle = tilt_direction * PI / 4
-	
-	for i in range(swing_count):
-		# Each swing reduces amplitude exponentially
-		var damping_factor = pow(0.6, i + 1)
-		var swing_amplitude = (tilt_direction * 0.2) * damping_factor
-		var swing_duration = 0.4 * (1.0 - i * 0.1)
-		
-		# Swing to opposite side of base
-		var target_1 = base_angle - swing_amplitude
-		swing_tween.tween_method(set_survival_rotation, current_angle, target_1, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		current_angle = target_1
-		
-		# Swing back
-		var target_2 = base_angle + swing_amplitude
-		swing_tween.tween_method(set_survival_rotation, current_angle, target_2, swing_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		current_angle = target_2
-	
-	# Phase 3: Finally settle at 45 degrees exactly
-	var final_angle = tilt_direction * PI / 4
-	swing_tween.tween_method(set_survival_rotation, current_angle, final_angle, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	
-	# Wait for all animations to complete
-	await swing_tween.finished
-	await get_tree().create_timer(0.3).timeout
-	
-	print("GameManager: Survival mode ready - image hanging from one corner!")
-	
-	# Continue the game in survival mode!
-	current_round_index += 1
-	start_level()
-	
 	var img_tex = load_texture_safe(img_path)
 	if img_tex:
 		content_sprite.texture = img_tex
@@ -313,9 +248,9 @@ func reset_formation():
 
 func set_survival_rotation(angle: float):
 	screen_sprite.rotation = angle
-	# Calculate position offset to simulate pivoting around survival_pivot
-	# NewPos = Pivot - Pivot.rotated(angle)
-	screen_sprite.position = survival_pivot - survival_pivot.rotated(angle)
+	# Proper pivoting math around a point P:
+	# NewPos = P + (InitialPos - P).rotated(angle)
+	screen_sprite.position = survival_pivot + (INITIAL_SCREEN_POS - survival_pivot).rotated(angle)
 
 func enter_survival_mode(crashed_anchor_index: int):
 	print("GameManager: Entering SURVIVAL MODE - Last helicopter standing!")
@@ -369,9 +304,21 @@ func enter_survival_mode(crashed_anchor_index: int):
 	
 	# Wait for all animations to complete
 	await swing_tween.finished
-	await get_tree().create_timer(0.3).timeout
 	
-	print("GameManager: Survival mode ready - image hanging from one corner!")
+	# NEW: Pause for 1 second as requested
+	print("GameManager: Settle pause...")
+	await get_tree().create_timer(1.0).timeout
+	
+	# NEW: Fly off to the right before starting the next round
+	print("GameManager: Survival departure...")
+	var depart_tween = create_tween()
+	depart_tween.set_meta("target", formation)
+	var view_width = get_viewport().get_visible_rect().size.x
+	depart_tween.tween_property(formation, "position:x", view_width + 800, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	
+	await depart_tween.finished
+	
+	print("GameManager: Survival mode ready - Image hanging from one corner!")
 	
 	# Continue the game in survival mode!
 	current_round_index += 1
@@ -573,53 +520,41 @@ func handle_incorrect():
 
 
 func final_crash_and_game_over():
-	print("GameManager: Final helicopter crashed! Game Over!")
+	print("GameManager: Final helicopter crashed! Dramatic Game Over sequence...")
 	game_active = false
+	is_transitioning = true
 	
-	# Dramatic final fall
+	# 1. Initial Shudder / Mechanical Failure
+	var shudder_tween = create_tween()
+	shudder_tween.set_parallel(true)
+	for i in range(8):
+		var offset = Vector2(randf_range(-10, 10), randf_range(-10, 10))
+		shudder_tween.tween_property(formation, "position", formation.position + offset, 0.05).set_delay(i * 0.05)
+	
+	await shudder_tween.finished
+	
+	# 2. Dramatic Fall with Zoom and Spin
 	var final_tween = create_tween()
 	final_tween.set_parallel(true)
 	
-	# Spin as it falls
-	final_tween.tween_property(formation, "rotation", formation.rotation + PI * 2, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# Spin chaoticly (faster rotation)
+	final_tween.tween_property(formation, "rotation", formation.rotation + PI * 4, 2.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	
-	# Drop down
-	final_tween.tween_property(formation, "position:y", get_viewport().get_visible_rect().size.y + 500, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# Drop down fast
+	var view_height = get_viewport().get_visible_rect().size.y
+	final_tween.tween_property(formation, "position:y", view_height + 800, 2.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	
+	# Zoom in as it falls (Slight scale up)
+	final_tween.tween_property(formation, "scale", Vector2(1.5, 1.5), 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
 	# Fade out
-	final_tween.tween_property(formation, "modulate:a", 0.0, 1.5)
+	final_tween.tween_property(formation, "modulate:a", 0.0, 1.5).set_delay(1.0)
 	
-	# Wait for animation to finish, pause, then show game over
+	# 3. Wait for animation to finish, pause, then show game over
 	await final_tween.finished
 	await get_tree().create_timer(0.5).timeout
 	game_over()
-	print("GameManager: 💥 GAME OVER! All helicopters crashed! Mistakes: ", mistakes_in_level, " 💥")
-
-func drop_image_and_end_game(crashed_anchor_index: int):
-	print("GameManager: Image dropping from side of crashed anchor helicopter!")
-	game_active = false
-	
-	# Determine which side the image should tilt/drop from
-	var tilt_direction = -1 if crashed_anchor_index == 0 else 1  # Left anchor = tilt left, right anchor = tilt right
-	
-	# Animate the image dropping
-	var drop_tween = create_tween()
-	drop_tween.set_parallel(true)
-	
-	# Tilt the screen frame
-	drop_tween.tween_property(screen_sprite, "rotation", tilt_direction * PI / 6, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	
-	# Drop the formation down
-	drop_tween.tween_property(formation, "position:y", get_viewport().get_visible_rect().size.y + 500, 2.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	
-	# Fade out
-	drop_tween.tween_property(formation, "modulate:a", 0.0, 1.5)
-	
-	# Wait for animation to finish, pause, then show game over
-	await drop_tween.finished
-	await get_tree().create_timer(0.5).timeout  # Short pause
-	game_over()
-	print("GameManager: 💥 GAME OVER! The image fell! Mistakes: ", mistakes_in_level, " 💥")
+	print("GameManager: 💥 GAME OVER! All helicopters down. 💥")
 
 func spawn_replacement_helicopter():
 	# No replacement anymore per design? 
