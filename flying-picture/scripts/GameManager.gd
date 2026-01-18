@@ -267,8 +267,11 @@ func setup_options(options):
 
 func _on_option_selected(selected_word):
 	if !game_active or is_transitioning: 
-		print("GameManager: Click ignored (game_active=", game_active, ", is_transitioning=", is_transitioning, ")")
 		return
+	
+	# IMMEDIATELY lock input for One-Shot logic
+	is_transitioning = true
+	print("GameManager: Answer selected: ", selected_word, " - Input locked.")
 	
 	if selected_word == current_round_data["correct_word"]:
 		handle_correct()
@@ -276,7 +279,7 @@ func _on_option_selected(selected_word):
 		handle_incorrect()
 
 func handle_correct():
-	is_transitioning = true # Set immediately
+	is_transitioning = true 
 	print("GameManager: Correct! current_round_index=", current_round_index)
 	
 	# Update spinner (Circular)
@@ -312,12 +315,12 @@ func handle_correct():
 	tween_cel.tween_callback(start_level)
 
 func handle_incorrect():
+	print("GameManager: Incorrect! current_round_index=", current_round_index)
 	mistakes_in_level += 1
 	
-	# Crash a helicopter (Specific Logic)
-	# Only crash indices 1, 2, 3, 4. And check if they are already crashed.
+	# 1. Crash a helicopter for visual feedback
 	var available_indices = []
-	for i in range(1, 5): # 1 to 4
+	for i in range(1, 5): 
 		if i < active_helicopters.size() and is_instance_valid(active_helicopters[i]) and !active_helicopters[i].is_crashed:
 			available_indices.append(i)
 			
@@ -325,9 +328,25 @@ func handle_incorrect():
 		var idx_to_crash = available_indices.pick_random()
 		active_helicopters[idx_to_crash].crash()
 	
+	# 2. Kill lingering tweens
+	var old_tween = get_tree().get_processed_tweens().filter(func(t): return t.is_valid() and t.get_meta("target", null) == formation)
+	for t in old_tween: t.kill()
+	
+	# 3. Quickly fly off to the right (One-Shot)
+	var view_width = get_viewport().get_visible_rect().size.x
+	var tween_fail = create_tween()
+	tween_fail.set_meta("target", formation)
+	
+	# Faster than a win departure
+	tween_fail.tween_property(formation, "position:x", view_width + 800, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	
+	# 4. Progress round
+	current_round_index += 1
+	
 	if mistakes_in_level >= 4:
-		# If 4 mistakes, we assume all middle ones are gone (since we only pick uncrashed ones)
-		game_over()
+		tween_fail.tween_callback(game_over)
+	else:
+		tween_fail.tween_callback(start_level)
 
 func spawn_replacement_helicopter():
 	# No replacement anymore per design? 
