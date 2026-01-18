@@ -50,10 +50,9 @@ func apply_transparency_shader(target_node: CanvasItem, mode: String = "magenta"
 		code += "void fragment() { vec4 color = texture(TEXTURE, UV); "
 		code += "float max_val = max(max(color.r, color.g), color.b); "
 		code += "float min_val = min(min(color.r, color.g), color.b); "
-		# Catch neutral colors (R,G,B close to each other)
-		# Widened tolerance to 0.2 to catch anti-aliased checkers
-		# Lowered brightness threshold to 0.3 to catch darker grey checkers
-		code += "bool is_neutral = (max_val - min_val) < 0.2 && max_val > 0.3; "
+		# Catch all neutral colors (R,G,B close to each other)
+		# Removed brightness threshold to also catch black/dark gray backgrounds
+		code += "bool is_neutral = (max_val - min_val) < 0.2; "
 		code += "if (is_neutral) { color.a = 0.0; } COLOR = color; }"
 	mat.shader.code = code
 	target_node.material = mat
@@ -221,7 +220,7 @@ func setup_options(options):
 	for word in options:
 		var btn = Button.new()
 		btn.text = word
-		btn.custom_minimum_size = Vector2(240, 60) # Reduced from 80
+		btn.custom_minimum_size = Vector2(240, 50) # Reduced from 60
 		btn.add_theme_font_size_override("font_size", 40) # Increased from 32
 		btn.pressed.connect(_on_option_selected.bind(word))
 		
