@@ -317,46 +317,57 @@ func handle_correct():
 func show_victory_fireworks():
 	print("GameManager: Showing victory fireworks!")
 	
-	# Create multiple firework particle emitters
-	for i in range(5):
-		var firework = CPUParticles2D.new()
-		add_child(firework)
+	# Create multiple waves of fireworks for maximum impact!
+	for wave in range(3):  # 3 waves of fireworks
+		for i in range(8):  # 8 fireworks per wave
+			var firework = CPUParticles2D.new()
+			add_child(firework)
+			
+			# Random position across screen
+			var viewport_size = get_viewport().get_visible_rect().size
+			firework.position = Vector2(
+				randf_range(100, viewport_size.x - 100),
+				randf_range(50, viewport_size.y - 150)
+			)
+			
+			# Enhanced firework settings for maximum visibility
+			firework.emitting = true
+			firework.amount = 150  # More particles!
+			firework.lifetime = 3.0  # Longer lasting
+			firework.one_shot = true
+			firework.explosiveness = 1.0
+			firework.randomness = 0.3
+			
+			# Radial burst pattern
+			firework.direction = Vector2(0, -1)
+			firework.spread = 180
+			firework.gravity = Vector2(0, 150)
+			firework.initial_velocity_min = 200.0  # Faster explosion
+			firework.initial_velocity_max = 400.0
+			
+			# Bigger particles
+			firework.scale_amount_min = 4.0
+			firework.scale_amount_max = 8.0
+			
+			# Vibrant colors
+			var colors = [
+				Color.RED, Color.YELLOW, Color.GREEN, 
+				Color.CYAN, Color.MAGENTA, Color.ORANGE,
+				Color.PINK, Color.LIGHT_BLUE
+			]
+			firework.color = colors[i % colors.size()]
+			
+			# Stagger the fireworks in this wave
+			await get_tree().create_timer(i * 0.15).timeout
+			firework.restart()
 		
-		# Random position across screen
-		var viewport_size = get_viewport().get_visible_rect().size
-		firework.position = Vector2(
-			randf_range(200, viewport_size.x - 200),
-			randf_range(100, viewport_size.y - 100)
-		)
-		
-		# Firework settings
-		firework.emitting = true
-		firework.amount = 50
-		firework.lifetime = 2.0
-		firework.one_shot = true
-		firework.explosiveness = 1.0
-		firework.direction = Vector2(0, -1)
-		firework.spread = 180
-		firework.gravity = Vector2(0, 200)
-		firework.initial_velocity_min = 100.0
-		firework.initial_velocity_max = 200.0
-		firework.scale_amount_min = 2.0
-		firework.scale_amount_max = 4.0
-		
-		# Random colors for each firework
-		var colors = [
-			Color.RED, Color.YELLOW, Color.GREEN, 
-			Color.CYAN, Color.MAGENTA, Color.ORANGE
-		]
-		firework.color = colors[i % colors.size()]
-		
-		# Delay each firework slightly
-		await get_tree().create_timer(i * 0.3).timeout
-		firework.restart()
+		# Pause between waves
+		if wave < 2:
+			await get_tree().create_timer(0.5).timeout
 	
-	# Show victory message after fireworks
-	await get_tree().create_timer(3.0).timeout
-	print("GameManager: Game Complete! Final Score: ", score, "/", total_spinners)
+	# Show victory message after all fireworks
+	await get_tree().create_timer(2.0).timeout
+	print("GameManager: 🎉 VICTORY! Game Complete! Final Score: ", score, "/", total_spinners, " 🎉")
 
 func handle_incorrect():
 	print("GameManager: Incorrect! current_round_index=", current_round_index)
