@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_manager"]
 [ext_resource type="PackedScene" path="res://scenes/AnimatedBackground.tscn" id="2_anim_bg"]
+[ext_resource type="StyleBox" path="res://assets/styles/button_yes.tres" id="3_yes"]
+[ext_resource type="StyleBox" path="res://assets/styles/button_no.tres" id="4_no"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_manager")
@@ -23,9 +25,23 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 40.0
+offset_right = -20.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
+
+[node name="HeaderSpacer" type="Control" parent="UILayer/UI/MainLayout"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UILayer/UI/MainLayout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "猜词游戏 - 是或不是"
+horizontal_alignment = 1
 
 [node name="LevelSelection" type="HBoxContainer" parent="UILayer/UI/MainLayout"]
 layout_mode = 2
@@ -43,16 +59,6 @@ custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "9 Words"
-
-[node name="HeaderSpacer" type="Control" parent="UILayer/UI/MainLayout"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-
-[node name="Title" type="Label" parent="UILayer/UI/MainLayout"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 36
-text = "猜词游戏 - 是或不是"
-horizontal_alignment = 1
 
 [node name="GridSpacer" type="Control" parent="UILayer/UI/MainLayout"]
 layout_mode = 2
@@ -100,16 +106,22 @@ alignment = 1
 custom_minimum_size = Vector2(200, 80)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("3_yes")
+theme_override_styles/hover = ExtResource("3_yes")
+theme_override_styles/pressed = ExtResource("3_yes")
 text = "是"
 
 [node name="NoButton" type="Button" parent="UILayer/UI/MainLayout/AnswerButtons"]
 custom_minimum_size = Vector2(200, 80)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = ExtResource("4_no")
+theme_override_styles/hover = ExtResource("4_no")
+theme_override_styles/pressed = ExtResource("4_no")
 text = "不是"
 
 [node name="BottomSpacer" type="Control" parent="UILayer/UI/MainLayout"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="StartButton" type="Button" parent="UILayer/UI"]
